@@ -1,0 +1,302 @@
+id,time,end,type,sc_id,source,orbit,description,discussion,tag
+46588,"2015-11-30 03:43:24 UTC","2015-11-30 03:45:44 UTC",burst_segment,mms,Burst,263,SLAMS,undefined,null
+46626,"2015-12-01 09:29:24 UTC","2015-12-01 09:29:44 UTC",burst_segment,mms,Burst,264,SLAMS,undefined,null
+46805,"2015-12-06 04:57:04 UTC","2015-12-06 04:57:34 UTC",burst_segment,mms,Burst,269,SLAMS,undefined,null
+46834,"2015-12-07 07:10:54 UTC","2015-12-07 07:11:24 UTC",burst_segment,mms,Burst,270,SLAMS,undefined,null
+46936,"2015-12-10 06:10:14 UTC","2015-12-10 06:10:44 UTC",burst_segment,mms,Burst,273,SLAMS,undefined,null
+48560,"2016-01-27 03:02:04 UTC","2016-01-27 03:03:54 UTC",burst_segment,mms,Burst,321,"foreshock/BS crossing, small-scale B structures (possibly SLAMS), reflected ions, strong E & B waves",undefined,null
+96283,"2016-12-11 09:37:44 UTC","2016-12-11 09:38:44 UTC",burst_segment,mms,Burst,642,"MSH SLAMS",undefined,null
+65933,"2016-12-17 12:27:04 UTC","2016-12-17 12:28:04 UTC",burst_segment,mms,Burst,648,SLAMS,undefined,null
+65934,"2016-12-17 12:36:44 UTC","2016-12-17 12:40:24 UTC",burst_segment,mms,Burst,648,SLAMS,undefined,null
+65935,"2016-12-17 12:55:04 UTC","2016-12-17 12:55:44 UTC",burst_segment,mms,Burst,648,SLAMS,undefined,null
+65962,"2016-12-17 13:25:54 UTC","2016-12-17 13:27:34 UTC",burst_segment,mms,Burst,648,SLAMS,undefined,null
+96445,"2016-12-21 12:41:14 UTC","2016-12-21 12:42:14 UTC",burst_segment,mms,Burst,652,SLAMS,undefined,null
+95323,"2016-12-21 13:29:14 UTC","2016-12-21 13:31:24 UTC",burst_segment,mms,Burst,652,SLAMSs,undefined,null
+68962,"2016-12-21 13:41:24 UTC","2016-12-21 13:42:04 UTC",burst_segment,mms,Burst,652,SLAMSs,undefined,null
+96314,"2016-12-21 13:45:04 UTC","2016-12-21 13:45:54 UTC",burst_segment,mms,Burst,652,SLAMSs,undefined,null
+73486,"2016-12-21 13:56:14 UTC","2016-12-21 13:57:24 UTC",burst_segment,mms,Burst,652,SLAMSs,undefined,null
+66650,"2016-12-23 08:48:54 UTC","2016-12-23 08:49:24 UTC",burst_segment,mms,Burst,654,SLAMSs,undefined,null
+95625,"2017-03-02 19:12:33 UTC","2017-03-02 19:13:03 UTC",burst_segment,mms,Burst,720,"Solar wind SLAMS (MMS4)",undefined,null
+95627,"2017-03-02 20:32:53 UTC","2017-03-02 20:33:23 UTC",burst_segment,mms,Burst,720,"SLAMS (MMS4)",undefined,null
+95629,"2017-03-04 05:02:33 UTC","2017-03-04 05:04:43 UTC",burst_segment,mms,Burst,721,"SLAMS, AE~100, waves, energetic ions (MMS3)",undefined,null
+95632,"2017-03-05 15:36:33 UTC","2017-03-05 15:37:13 UTC",burst_segment,mms,Burst,722,"SLAMS w/ high frequency waves, 50keV e- (MMS3)",undefined,null
+111041,"2017-10-18 05:43:53 UTC","2017-10-18 05:47:33 UTC",burst_segment,mms,Burst,808,"Quasi=|| bow shock, foreshock interval with SLAMS",undefined,null
+111208,"2017-10-20 23:09:33 UTC","2017-10-20 23:11:13 UTC",burst_segment,mms,Burst,809,"Quasi-|| bow shock with foreshock, SLAMS, localized electron heating",undefined,null
+111209,"2017-10-20 23:11:13 UTC","2017-10-20 23:13:13 UTC",burst_segment,mms,Burst,809,"Quasi-|| bow shock? with foreshock, SLAMS",undefined,null
+111210,"2017-10-20 23:13:13 UTC","2017-10-20 23:15:13 UTC",burst_segment,mms,Burst,809,"Quasi-|| bow shock? with foreshock, SLAMS",undefined,null
+111263,"2017-10-21 20:56:43 UTC","2017-10-21 20:58:33 UTC",burst_segment,mms,Burst,809,"Quasi-|| bow shock (and SLAMS?)",undefined,null
+111269,"2017-10-21 21:29:03 UTC","2017-10-21 21:32:03 UTC",burst_segment,mms,Burst,809,"Quasi-|| bow shock and foreshock, more SLAMS?",undefined,null
+113046,"2017-11-20 07:26:03 UTC","2017-11-20 07:27:13 UTC",burst_segment,mms,Burst,820,"foreshock ion beam with possible SLAMS",undefined,null
+113047,"2017-11-20 07:28:23 UTC","2017-11-20 07:29:03 UTC",burst_segment,mms,Burst,820,"foreshock ion beam with possible SLAMS",undefined,null
+113049,"2017-11-20 07:33:43 UTC","2017-11-20 07:35:43 UTC",burst_segment,mms,Burst,820,"foreshock ion beams with possible SLAMS",undefined,null
+113050,"2017-11-20 07:38:03 UTC","2017-11-20 07:39:33 UTC",burst_segment,mms,Burst,820,"foreshock ion beams with possible SLAMS",undefined,null
+113054,"2017-11-20 07:53:23 UTC","2017-11-20 07:54:23 UTC",burst_segment,mms,Burst,820,"foreshock ion beams with possible SLAMS",undefined,null
+113158,"2017-11-23 04:54:23 UTC","2017-11-23 04:56:43 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS",undefined,null
+113159,"2017-11-23 04:56:43 UTC","2017-11-23 04:59:03 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS",undefined,null
+113161,"2017-11-23 05:01:23 UTC","2017-11-23 05:03:33 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS",undefined,null
+113163,"2017-11-23 05:06:13 UTC","2017-11-23 05:08:13 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS",undefined,null
+113165,"2017-11-23 05:11:13 UTC","2017-11-23 05:13:03 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS",undefined,null
+113166,"2017-11-23 05:17:43 UTC","2017-11-23 05:20:03 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS & large diffB",undefined,null
+113167,"2017-11-23 05:20:03 UTC","2017-11-23 05:22:23 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS & large diffB",undefined,null
+113168,"2017-11-23 05:22:23 UTC","2017-11-23 05:24:43 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS & large diffB",undefined,null
+113169,"2017-11-23 05:24:43 UTC","2017-11-23 05:27:03 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS & large diffB",undefined,null
+113170,"2017-11-23 05:27:03 UTC","2017-11-23 05:29:23 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS & large diffB",undefined,null
+113171,"2017-11-23 05:29:23 UTC","2017-11-23 05:31:43 UTC",burst_segment,mms,Burst,821,"quasi-parallel shocks with possible SLAMS & large diffB",undefined,null
+113172,"2017-11-23 05:34:03 UTC","2017-11-23 05:36:13 UTC",burst_segment,mms,Burst,821,"quasi-parallel shock with with possible SLAMS & large diffB",undefined,null
+113173,"2017-11-23 05:36:13 UTC","2017-11-23 05:38:23 UTC",burst_segment,mms,Burst,821,"quasi-parallel shock with with possible SLAMS & large diffB",undefined,null
+113174,"2017-11-23 05:38:23 UTC","2017-11-23 05:40:33 UTC",burst_segment,mms,Burst,821,"quasi-parallel shock with with possible SLAMS & large diffB",undefined,null
+113175,"2017-11-23 05:40:33 UTC","2017-11-23 05:42:43 UTC",burst_segment,mms,Burst,821,"quasi-parallel shock with with possible SLAMS & large diffB",undefined,null
+113176,"2017-11-23 05:42:43 UTC","2017-11-23 05:44:53 UTC",burst_segment,mms,Burst,821,"quasi-parallel shock with with possible SLAMS & large diffB",undefined,null
+113177,"2017-11-23 05:44:53 UTC","2017-11-23 05:47:03 UTC",burst_segment,mms,Burst,821,"quasi-parallel shock with with possible SLAMS & large diffB",undefined,null
+113178,"2017-11-23 05:47:03 UTC","2017-11-23 05:49:13 UTC",burst_segment,mms,Burst,821,"quasi-parallel shock upstream with with possible SLAMS",undefined,null
+113179,"2017-11-23 05:50:53 UTC","2017-11-23 05:51:23 UTC",burst_segment,mms,Burst,821,"possible SLAMS with large diffB",undefined,null
+113398,"2017-11-26 00:21:43 UTC","2017-11-26 00:23:33 UTC",burst_segment,mms,Burst,822,"foreshock with field-aligned beam & possible SLAMS",undefined,null
+113399,"2017-11-26 00:23:33 UTC","2017-11-26 00:25:33 UTC",burst_segment,mms,Burst,822,"foreshock with field-aligned beam & possible SLAMS",undefined,null
+113400,"2017-11-26 00:27:03 UTC","2017-11-26 00:28:53 UTC",burst_segment,mms,Burst,822,"foreshock with field-aligned beam & possible SLAMS",undefined,null
+113401,"2017-11-26 00:28:53 UTC","2017-11-26 00:30:53 UTC",burst_segment,mms,Burst,822,"foreshock with field-aligned beam & possible SLAMS",undefined,null
+113402,"2017-11-26 00:30:53 UTC","2017-11-26 00:32:43 UTC",burst_segment,mms,Burst,822,"foreshock with field-aligned beam & possible SLAMS",undefined,null
+113845,"2017-12-06 08:22:03 UTC","2017-12-06 08:24:33 UTC",burst_segment,mms,Burst,825,"Forshock with energetic protons and shocklets or SLAMS",undefined,null
+113846,"2017-12-06 08:24:33 UTC","2017-12-06 08:27:03 UTC",burst_segment,mms,Burst,825,"Forshock with energetic protons and shocklets or SLAMS",undefined,null
+113847,"2017-12-06 08:27:03 UTC","2017-12-06 08:29:33 UTC",burst_segment,mms,Burst,825,"Forshock with energetic protons and shocklets or SLAMS",undefined,null
+113848,"2017-12-06 08:29:33 UTC","2017-12-06 08:32:03 UTC",burst_segment,mms,Burst,825,"Forshock with energetic protons and shocklets or SLAMS",undefined,null
+113849,"2017-12-06 08:32:03 UTC","2017-12-06 08:34:33 UTC",burst_segment,mms,Burst,825,"Forshock with energetic protons and shocklets or SLAMS",undefined,null
+113901,"2017-12-07 07:58:33 UTC","2017-12-07 08:00:53 UTC",burst_segment,mms,Burst,826,SLAMS,undefined,null
+113902,"2017-12-07 08:00:53 UTC","2017-12-07 08:03:03 UTC",burst_segment,mms,Burst,826,SLAMS,undefined,null
+113903,"2017-12-07 08:03:03 UTC","2017-12-07 08:05:23 UTC",burst_segment,mms,Burst,826,SLAMS,undefined,null
+113904,"2017-12-07 08:05:23 UTC","2017-12-07 08:07:33 UTC",burst_segment,mms,Burst,826,SLAMS,undefined,null
+113905,"2017-12-07 08:07:33 UTC","2017-12-07 08:09:53 UTC",burst_segment,mms,Burst,826,SLAMS,undefined,null
+114477,"2017-12-18 13:06:13 UTC","2017-12-18 13:07:43 UTC",burst_segment,mms,Burst,830,"Current sheet or SLAMS in quasi-parallel foreshock with energetic ions and electrons",undefined,null
+114478,"2017-12-18 13:07:43 UTC","2017-12-18 13:09:23 UTC",burst_segment,mms,Burst,830,"Current sheet or SLAMS in quasi-parallel foreshock with energetic ions and electrons",undefined,null
+114646,"2017-12-21 08:00:03 UTC","2017-12-21 08:02:23 UTC",burst_segment,mms,Burst,831,"Quasi-parallel bow shock crossings (multiple) and/or shocklet/SLAMS",undefined,null
+114647,"2017-12-21 08:02:23 UTC","2017-12-21 08:04:53 UTC",burst_segment,mms,Burst,831,"Quasi-parallel bow shock crossings (multiple) and/or shocklet/SLAMS",undefined,null
+114648,"2017-12-21 08:04:53 UTC","2017-12-21 08:07:13 UTC",burst_segment,mms,Burst,831,"Quasi-parallel bow shock crossings (multiple) and/or shocklet/SLAMS",undefined,null
+114649,"2017-12-21 08:07:13 UTC","2017-12-21 08:09:43 UTC",burst_segment,mms,Burst,831,"Quasi-parallel bow shock crossings (multiple) and/or shocklet/SLAMS",undefined,null
+114650,"2017-12-21 08:09:43 UTC","2017-12-21 08:12:03 UTC",burst_segment,mms,Burst,831,"Quasi-parallel bow shock crossings (multiple) and/or shocklet/SLAMS",undefined,null
+114651,"2017-12-21 08:14:13 UTC","2017-12-21 08:16:23 UTC",burst_segment,mms,Burst,831,"Nonlinear steepened ULF waves in ion foreshock preceding shocklet/SLAMS",undefined,null
+114652,"2017-12-21 08:16:23 UTC","2017-12-21 08:18:23 UTC",burst_segment,mms,Burst,831,"Shocklet/SLAMS in ion foreshock",undefined,null
+114653,"2017-12-21 08:18:23 UTC","2017-12-21 08:20:33 UTC",burst_segment,mms,Burst,831,"Shocklet/SLAMS in ion foreshock",undefined,null
+114654,"2017-12-21 08:26:03 UTC","2017-12-21 08:27:03 UTC",burst_segment,mms,Burst,831,"Isolated shocklet/SLAMS in ion foreshock",undefined,null
+114655,"2017-12-21 08:40:53 UTC","2017-12-21 08:42:53 UTC",burst_segment,mms,Burst,831,"Isolated shocklet/SLAMS and steepened ULF waves in the ion foreshock",undefined,null
+114656,"2017-12-21 08:42:53 UTC","2017-12-21 08:44:53 UTC",burst_segment,mms,Burst,831,"Isolated shocklet/SLAMS and steepened ULF waves in the ion foreshock",undefined,null
+114657,"2017-12-21 08:44:53 UTC","2017-12-21 08:47:03 UTC",burst_segment,mms,Burst,831,"Isolated shocklet/SLAMS and steepened ULF waves in the ion foreshock",undefined,null
+114658,"2017-12-21 08:47:03 UTC","2017-12-21 08:49:03 UTC",burst_segment,mms,Burst,831,"Isolated shocklet/SLAMS and steepened ULF waves in the ion foreshock",undefined,null
+114659,"2017-12-21 08:57:03 UTC","2017-12-21 08:59:03 UTC",burst_segment,mms,Burst,831,"Shocklet/SLAMS in the ion foreshock",undefined,null
+114660,"2017-12-21 08:59:03 UTC","2017-12-21 09:01:13 UTC",burst_segment,mms,Burst,831,"Shocklet/SLAMS in the ion foreshock",undefined,null
+114721,"2017-12-24 01:39:43 UTC","2017-12-24 01:40:53 UTC",burst_segment,mms,Burst,832,SLAMS,undefined,null
+114751,"2017-12-24 01:39:53 UTC","2017-12-24 01:41:13 UTC",burst_segment,mms,Burst,832,"SLAMS/bow shock crossings",undefined,null
+114722,"2017-12-24 01:41:43 UTC","2017-12-24 01:42:43 UTC",burst_segment,mms,Burst,832,"SLAMS/bow shock crossings",undefined,null
+115016,"2017-12-26 22:27:23 UTC","2017-12-26 22:30:33 UTC",burst_segment,mms,Burst,833,"Foreshock SLAMS",undefined,null
+115187,"2017-12-31 18:24:53 UTC","2017-12-31 18:25:33 UTC",burst_segment,mms,Burst,834,"SLAMS (very brief interval)",undefined,null
+115377,"2018-01-01 15:38:43 UTC","2018-01-01 15:40:03 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115378,"2018-01-01 15:40:03 UTC","2018-01-01 15:41:23 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115379,"2018-01-01 15:42:13 UTC","2018-01-01 15:43:43 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115380,"2018-01-01 15:49:33 UTC","2018-01-01 15:51:03 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115381,"2018-01-01 15:54:03 UTC","2018-01-01 15:55:33 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115382,"2018-01-01 15:57:43 UTC","2018-01-01 15:59:13 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115383,"2018-01-01 15:59:13 UTC","2018-01-01 16:01:03 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115384,"2018-01-01 16:04:43 UTC","2018-01-01 16:06:03 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115385,"2018-01-01 16:07:13 UTC","2018-01-01 16:08:53 UTC",burst_segment,mms,Burst,835,"SLAMS/Shocklets with B null and bipolar ExB flow signature",undefined,null
+115386,"2018-01-01 16:12:43 UTC","2018-01-01 16:13:53 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115387,"2018-01-01 16:13:53 UTC","2018-01-01 16:15:13 UTC",burst_segment,mms,Burst,835,SLAMS/Shocklets,undefined,null
+115388,"2018-01-03 14:50:53 UTC","2018-01-03 14:53:43 UTC",burst_segment,mms,Burst,835,SLAMs/Shocklet,undefined,null
+115519,"2018-01-04 12:17:53 UTC","2018-01-04 12:19:53 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets in foreshock region, particle energization",undefined,null
+115520,"2018-01-04 12:19:53 UTC","2018-01-04 12:21:53 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets in foreshock region, particle energization",undefined,null
+115530,"2018-01-06 12:49:23 UTC","2018-01-06 12:50:23 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets or partial quasi-|| bow shock crossings",undefined,null
+115531,"2018-01-06 12:50:23 UTC","2018-01-06 12:52:53 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets or partial quasi-|| bow shock crossings",undefined,null
+115532,"2018-01-06 12:52:53 UTC","2018-01-06 12:54:53 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets or partial quasi-|| bow shock crossings",undefined,null
+115533,"2018-01-06 12:54:53 UTC","2018-01-06 12:55:53 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets or partial quasi-|| bow shock crossings",undefined,null
+115534,"2018-01-06 12:55:53 UTC","2018-01-06 12:57:33 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets or partial quasi-|| bow shock crossings",undefined,null
+115535,"2018-01-06 12:57:33 UTC","2018-01-06 13:01:33 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets or partial quasi-|| bow shock crossings",undefined,null
+115536,"2018-01-06 13:12:03 UTC","2018-01-06 13:14:13 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets into quasi-|| bow shock crossings",undefined,null
+115537,"2018-01-06 13:14:13 UTC","2018-01-06 13:15:43 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets into quasi-|| bow shock crossings",undefined,null
+115538,"2018-01-06 13:15:43 UTC","2018-01-06 13:17:43 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets into quasi-|| bow shock crossings",undefined,null
+115539,"2018-01-06 13:17:43 UTC","2018-01-06 13:19:53 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets into quasi-|| bow shock crossings",undefined,null
+115540,"2018-01-06 13:19:53 UTC","2018-01-06 13:21:53 UTC",burst_segment,mms,Burst,836,"SLAMS/shocklets into quasi-|| bow shock crossings",undefined,null
+116110,"2018-01-15 16:39:03 UTC","2018-01-15 16:40:33 UTC",burst_segment,mms,Burst,840,"SLAMS and energetic ions",undefined,null
+116065,"2018-01-15 16:39:13 UTC","2018-01-15 16:40:33 UTC",burst_segment,mms,Burst,840,"SLAMS and energetic ions",undefined,null
+116321,"2018-01-23 07:52:13 UTC","2018-01-23 07:54:43 UTC",burst_segment,mms,Burst,842,"ULF foreshock and possible SLAMS",undefined,null
+116322,"2018-01-23 07:54:43 UTC","2018-01-23 07:57:13 UTC",burst_segment,mms,Burst,842,"ULF foreshock and possible SLAMS",undefined,null
+116324,"2018-01-23 08:39:03 UTC","2018-01-23 08:41:03 UTC",burst_segment,mms,Burst,842,"ULF foreshock and possible SLAMS",undefined,null
+116325,"2018-01-23 08:41:03 UTC","2018-01-23 08:42:53 UTC",burst_segment,mms,Burst,842,"ULF foreshock and possible SLAMS",undefined,null
+116326,"2018-01-23 08:42:53 UTC","2018-01-23 08:44:53 UTC",burst_segment,mms,Burst,842,"ULF foreshock and possible SLAMS",undefined,null
+116327,"2018-01-23 08:51:53 UTC","2018-01-23 08:53:53 UTC",burst_segment,mms,Burst,842,"Isolated SLAMS",undefined,null
+116472,"2018-01-26 07:53:13 UTC","2018-01-26 07:55:03 UTC",burst_segment,mms,Burst,843,"SLAMS and quasi-parallel bow shock",undefined,null
+116473,"2018-01-26 07:55:03 UTC","2018-01-26 07:56:53 UTC",burst_segment,mms,Burst,843,"SLAMS and quasi-parallel bow shock",undefined,null
+116476,"2018-01-26 08:22:43 UTC","2018-01-26 08:25:03 UTC",burst_segment,mms,Burst,843,"Series of foreshock transients (HFAs, FBs, and/or SLAMS) and quasi-parallel bow shock activity",undefined,null
+116477,"2018-01-26 08:25:03 UTC","2018-01-26 08:27:13 UTC",burst_segment,mms,Burst,843,"Intense current sheet during series of foreshock transients (HFAs, FBs, and/or SLAMS) and quasi-parallel bow shock activity",undefined,null
+116478,"2018-01-26 08:27:13 UTC","2018-01-26 08:29:33 UTC",burst_segment,mms,Burst,843,"Series of foreshock transients (HFAs, FBs, and/or SLAMS) and quasi-parallel bow shock activity",undefined,null
+116550,"2018-01-26 21:59:03 UTC","2018-01-26 22:00:13 UTC",burst_segment,mms,Burst,844,"SLAMS or quasi-parallel bow shock",undefined,null
+116555,"2018-01-26 22:15:03 UTC","2018-01-26 22:17:03 UTC",burst_segment,mms,Burst,844,"Series of SLAMS or quasi-parallel Bow Shock crossings",undefined,null
+116556,"2018-01-26 22:17:03 UTC","2018-01-26 22:19:03 UTC",burst_segment,mms,Burst,844,"Series of SLAMS or quasi-parallel Bow Shock crossings",undefined,null
+116557,"2018-01-26 22:19:03 UTC","2018-01-26 22:21:03 UTC",burst_segment,mms,Burst,844,"Series of SLAMS or quasi-parallel Bow Shock crossings",undefined,null
+116560,"2018-01-26 22:30:23 UTC","2018-01-26 22:32:43 UTC",burst_segment,mms,Burst,844,"Series of SLAMS or foreshock transients",undefined,null
+116531,"2018-01-28 00:06:43 UTC","2018-01-28 00:08:43 UTC",burst_segment,mms,Burst,844,"Possible SLAMS and wave activity",undefined,null
+116532,"2018-01-28 00:08:43 UTC","2018-01-28 00:10:43 UTC",burst_segment,mms,Burst,844,"Possible SLAMS and wave activity",undefined,null
+116535,"2018-01-28 00:39:13 UTC","2018-01-28 00:41:33 UTC",burst_segment,mms,Burst,844,"Possible SLAMS and strong wave activity",undefined,null
+116779,"2018-01-31 23:21:03 UTC","2018-01-31 23:22:23 UTC",burst_segment,mms,Burst,845,"Possible SLAMs",undefined,null
+116780,"2018-01-31 23:22:23 UTC","2018-01-31 23:23:43 UTC",burst_segment,mms,Burst,845,"Possible SLAMs",undefined,null
+117050,"2018-02-06 13:18:13 UTC","2018-02-06 13:21:43 UTC",burst_segment,mms,Burst,847,"Foreshock ULF activity and SLAMs",undefined,null
+117051,"2018-02-06 13:21:43 UTC","2018-02-06 13:25:33 UTC",burst_segment,mms,Burst,847,"Foreshock ULF activity and SLAMs",undefined,null
+117612,"2018-02-17 21:12:43 UTC","2018-02-17 21:16:13 UTC",burst_segment,mms,Burst,851,"Extended shock foot w SLAMSs",undefined,null
+117613,"2018-02-17 21:24:53 UTC","2018-02-17 21:26:43 UTC",burst_segment,mms,Burst,851,SLAMSs,undefined,null
+120084,"2018-03-29 02:52:43 UTC","2018-03-29 02:56:53 UTC",burst_segment,mms,Burst,865,"SLAMs, foreshock B and n pulsations",undefined,null
+120107,"2018-03-29 02:57:03 UTC","2018-03-29 03:01:13 UTC",burst_segment,mms,Burst,865,"SLAMs, foreshock B and n pulsations",undefined,null
+120108,"2018-03-29 03:01:23 UTC","2018-03-29 03:05:43 UTC",burst_segment,mms,Burst,865,"SLAMs, foreshock B and n pulsations",undefined,null
+120109,"2018-03-29 03:05:53 UTC","2018-03-29 03:10:03 UTC",burst_segment,mms,Burst,865,"SLAMs, foreshock B and n pulsations",undefined,null
+119995,"2018-04-02 02:47:23 UTC","2018-04-02 02:49:23 UTC",burst_segment,mms,Burst,867,"Well-developed SLAMs",undefined,null
+119996,"2018-04-02 02:49:23 UTC","2018-04-02 02:51:23 UTC",burst_segment,mms,Burst,867,"Well-developed SLAMS",undefined,null
+119997,"2018-04-02 02:51:23 UTC","2018-04-02 02:53:23 UTC",burst_segment,mms,Burst,867,"Well-developed SLAMS",undefined,null
+120014,"2018-04-02 05:13:43 UTC","2018-04-02 05:15:13 UTC",burst_segment,mms,Burst,867,"Possible SLAMs",undefined,null
+120015,"2018-04-02 05:15:13 UTC","2018-04-02 05:16:53 UTC",burst_segment,mms,Burst,867,"Possible SLAMs",undefined,null
+120157,"2018-04-04 23:31:33 UTC","2018-04-04 23:34:03 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120158,"2018-04-04 23:34:03 UTC","2018-04-04 23:36:33 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120159,"2018-04-04 23:36:33 UTC","2018-04-04 23:39:03 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120160,"2018-04-04 23:39:03 UTC","2018-04-04 23:41:33 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120161,"2018-04-04 23:41:33 UTC","2018-04-04 23:44:03 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120162,"2018-04-04 23:44:03 UTC","2018-04-04 23:46:33 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120163,"2018-04-04 23:46:33 UTC","2018-04-04 23:49:03 UTC",burst_segment,mms,Burst,868,"Possible SLAMs and sharp SW By current sheet",undefined,null
+120164,"2018-04-04 23:49:03 UTC","2018-04-04 23:51:33 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120165,"2018-04-04 23:51:33 UTC","2018-04-04 23:53:53 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120166,"2018-04-04 23:53:53 UTC","2018-04-04 23:56:23 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120167,"2018-04-04 23:56:23 UTC","2018-04-04 23:58:53 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120168,"2018-04-04 23:58:53 UTC","2018-04-05 00:01:23 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120169,"2018-04-05 00:01:23 UTC","2018-04-05 00:03:53 UTC",burst_segment,mms,Burst,868,"Possible SLAMs and sharp SW Bxz current sheet",undefined,null
+120170,"2018-04-05 00:03:53 UTC","2018-04-05 00:06:23 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120171,"2018-04-05 00:06:23 UTC","2018-04-05 00:08:53 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120172,"2018-04-05 00:08:53 UTC","2018-04-05 00:11:23 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120173,"2018-04-05 00:11:23 UTC","2018-04-05 00:13:53 UTC",burst_segment,mms,Burst,868,"Possible SLAMs",undefined,null
+120188,"2018-04-05 03:21:03 UTC","2018-04-05 03:23:33 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120189,"2018-04-05 03:23:33 UTC","2018-04-05 03:26:03 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120190,"2018-04-05 03:26:03 UTC","2018-04-05 03:28:33 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120191,"2018-04-05 03:28:33 UTC","2018-04-05 03:30:53 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120192,"2018-04-05 03:30:53 UTC","2018-04-05 03:33:23 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120193,"2018-04-05 03:33:23 UTC","2018-04-05 03:35:53 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120194,"2018-04-05 03:35:53 UTC","2018-04-05 03:38:23 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120195,"2018-04-05 03:38:23 UTC","2018-04-05 03:40:53 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120196,"2018-04-05 03:40:53 UTC","2018-04-05 03:43:23 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120197,"2018-04-05 03:43:23 UTC","2018-04-05 03:45:43 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120198,"2018-04-05 03:45:43 UTC","2018-04-05 03:48:13 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120199,"2018-04-05 03:48:13 UTC","2018-04-05 03:50:43 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120200,"2018-04-05 03:50:43 UTC","2018-04-05 03:53:13 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120201,"2018-04-05 03:53:13 UTC","2018-04-05 03:55:43 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120202,"2018-04-05 03:55:43 UTC","2018-04-05 03:58:13 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120203,"2018-04-05 03:58:13 UTC","2018-04-05 04:00:33 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120204,"2018-04-05 04:00:33 UTC","2018-04-05 04:03:03 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120205,"2018-04-05 04:03:03 UTC","2018-04-05 04:05:33 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120206,"2018-04-05 04:05:33 UTC","2018-04-05 04:08:03 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120207,"2018-04-05 04:08:03 UTC","2018-04-05 04:10:33 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120208,"2018-04-05 04:10:33 UTC","2018-04-05 04:13:03 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120209,"2018-04-05 04:13:03 UTC","2018-04-05 04:15:33 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120210,"2018-04-05 04:15:33 UTC","2018-04-05 04:17:53 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120211,"2018-04-05 04:17:53 UTC","2018-04-05 04:20:23 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120212,"2018-04-05 04:20:23 UTC","2018-04-05 04:22:53 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120213,"2018-04-05 04:22:53 UTC","2018-04-05 04:25:23 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120214,"2018-04-05 04:25:23 UTC","2018-04-05 04:27:53 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120215,"2018-04-05 04:27:53 UTC","2018-04-05 04:30:23 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120216,"2018-04-05 04:30:23 UTC","2018-04-05 04:32:43 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120217,"2018-04-05 04:32:43 UTC","2018-04-05 04:35:13 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120218,"2018-04-05 04:35:13 UTC","2018-04-05 04:37:43 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120219,"2018-04-05 04:37:43 UTC","2018-04-05 04:40:13 UTC",burst_segment,mms,Burst,868,"Extended region of SLAMs",undefined,null
+120387,"2018-04-08 17:37:33 UTC","2018-04-08 17:39:53 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120388,"2018-04-08 17:39:53 UTC","2018-04-08 17:42:23 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120389,"2018-04-08 17:42:23 UTC","2018-04-08 17:44:43 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120390,"2018-04-08 17:44:43 UTC","2018-04-08 17:47:13 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120391,"2018-04-08 17:47:13 UTC","2018-04-08 17:49:33 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120392,"2018-04-08 17:49:33 UTC","2018-04-08 17:51:53 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120393,"2018-04-08 17:51:53 UTC","2018-04-08 17:54:23 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120394,"2018-04-08 17:54:23 UTC","2018-04-08 17:56:43 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120395,"2018-04-08 17:56:43 UTC","2018-04-08 17:59:03 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120396,"2018-04-08 17:59:03 UTC","2018-04-08 18:01:33 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120397,"2018-04-08 18:01:33 UTC","2018-04-08 18:03:53 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120398,"2018-04-08 18:03:53 UTC","2018-04-08 18:06:23 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+120399,"2018-04-08 18:06:23 UTC","2018-04-08 18:08:43 UTC",burst_segment,mms,Burst,869,SLAMs,undefined,null
+133488,"2018-11-13 10:35:53 UTC","2018-11-13 10:38:03 UTC",burst_segment,mms,Burst,947,"Skimming Quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133489,"2018-11-13 10:38:03 UTC","2018-11-13 10:40:13 UTC",burst_segment,mms,Burst,947,"Skimming Quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133490,"2018-11-13 10:40:13 UTC","2018-11-13 10:42:33 UTC",burst_segment,mms,Burst,947,"Skimming Quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133491,"2018-11-13 10:42:33 UTC","2018-11-13 10:44:43 UTC",burst_segment,mms,Burst,947,"Skimming Quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133492,"2018-11-13 10:48:33 UTC","2018-11-13 10:50:23 UTC",burst_segment,mms,Burst,947,"Skimming quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133493,"2018-11-13 10:50:23 UTC","2018-11-13 10:52:23 UTC",burst_segment,mms,Burst,947,"Skimming quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133494,"2018-11-13 10:52:23 UTC","2018-11-13 10:54:13 UTC",burst_segment,mms,Burst,947,"Skimming quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133495,"2018-11-13 10:54:13 UTC","2018-11-13 10:56:13 UTC",burst_segment,mms,Burst,947,"Skimming quasi-parallel bow shock (or SLAMS?), long enhancement of energetic ions",undefined,null
+133511,"2018-11-14 16:52:23 UTC","2018-11-14 16:54:23 UTC",burst_segment,mms,Burst,947,"Skimming bow shock or SLAMS",undefined,null
+133567,"2018-11-15 22:25:23 UTC","2018-11-15 22:27:33 UTC",burst_segment,mms,Burst,948,"Intens B-field fluctuations (different from quasi-parallel shock and SLAMS structure)",undefined,null
+134634,"2018-12-05 14:17:53 UTC","2018-12-05 14:19:23 UTC",burst_segment,mms,Burst,955,"SLAMS, shocklets",undefined,null
+134636,"2018-12-05 14:26:43 UTC","2018-12-05 14:27:43 UTC",burst_segment,mms,Burst,955,SLAMS,undefined,null
+134637,"2018-12-05 14:29:33 UTC","2018-12-05 14:34:33 UTC",burst_segment,mms,Burst,955,"SLAMS, shocklets",undefined,null
+134598,"2018-12-05 15:44:23 UTC","2018-12-05 15:45:33 UTC",burst_segment,mms,Burst,955,SLAMS,undefined,null
+134599,"2018-12-05 15:48:43 UTC","2018-12-05 15:49:33 UTC",burst_segment,mms,Burst,955,SLAMS,undefined,null
+136766,"2019-01-22 11:45:13 UTC","2019-01-22 11:46:53 UTC",burst_segment,mms,Burst,972,"Skimming quasi-parallel bow shock (SLAMS?)",undefined,null
+136940,"2019-01-25 06:50:13 UTC","2019-01-25 06:51:23 UTC",burst_segment,mms,Burst,973,"Foreshock structure (SLAMS)",undefined,null
+136948,"2019-01-25 08:26:43 UTC","2019-01-25 08:29:13 UTC",burst_segment,mms,Burst,973,"Skimming bow shock (SLAMS)",undefined,null
+136949,"2019-01-25 08:29:13 UTC","2019-01-25 08:31:43 UTC",burst_segment,mms,Burst,973,"Skimming bow shock (SLAMS)",undefined,null
+136962,"2019-01-27 07:43:33 UTC","2019-01-27 07:47:23 UTC",burst_segment,mms,Burst,973,"Partial bow shock crossing, SLAMS",undefined,null
+138227,"2019-02-05 04:57:03 UTC","2019-02-05 04:58:03 UTC",burst_segment,mms,Burst,976,"foreshock structures, possible SLAMs",undefined,null
+138435,"2019-02-23 05:19:13 UTC","2019-02-23 05:21:23 UTC",burst_segment,mms,Burst,982,"Quasiparallel Shock crossing with possible HFA/SLAMS",undefined,null
+138436,"2019-02-23 05:21:23 UTC","2019-02-23 05:23:33 UTC",burst_segment,mms,Burst,982,"Quasiparallel Shock crossing with possible HFA/SLAMS",undefined,null
+138437,"2019-02-23 05:23:33 UTC","2019-02-23 05:25:53 UTC",burst_segment,mms,Burst,982,"Quasiparallel Shock crossing with possible HFA/SLAMS",undefined,null
+138438,"2019-02-23 05:25:53 UTC","2019-02-23 05:28:03 UTC",burst_segment,mms,Burst,982,"Quasiparallel Shock crossing with possible HFA/SLAMS",undefined,null
+138439,"2019-02-23 05:28:03 UTC","2019-02-23 05:30:03 UTC",burst_segment,mms,Burst,982,"Possible HFA/SLAMS",undefined,null
+138442,"2019-02-23 05:40:53 UTC","2019-02-23 05:41:43 UTC",burst_segment,mms,Burst,982,"Train of low frequency compressional waves with HF E&B waves (near HFA/SLAMS)",undefined,null
+138958,"2019-02-26 00:48:43 UTC","2019-02-26 00:51:03 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+138959,"2019-02-26 00:51:03 UTC","2019-02-26 00:53:13 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+138960,"2019-02-26 00:53:13 UTC","2019-02-26 00:55:33 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+138961,"2019-02-26 00:55:33 UTC","2019-02-26 00:57:43 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+138962,"2019-02-26 00:57:43 UTC","2019-02-26 01:00:03 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+138965,"2019-02-26 01:00:03 UTC","2019-02-26 01:02:23 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+138966,"2019-02-26 01:02:23 UTC","2019-02-26 01:04:33 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+138967,"2019-02-26 01:04:33 UTC","2019-02-26 01:06:53 UTC",burst_segment,mms,Burst,982,"Qpar shock with bubbles and SLAMs",undefined,null
+140627,"2019-04-13 15:13:53 UTC","2019-04-13 15:16:53 UTC",burst_segment,mms,Burst,996,"Possible HFA, with crater-like density profile at edges of B structure and Vz enhancement (or possibly just SLAMS)",undefined,null
+140628,"2019-04-13 17:00:43 UTC","2019-04-13 17:03:03 UTC",burst_segment,mms,Burst,996,"SLAMS with energetic foreshock ion enhancements (or just partial bow shock)",undefined,null
+140629,"2019-04-13 17:03:03 UTC","2019-04-13 17:05:13 UTC",burst_segment,mms,Burst,996,"SLAMS with energetic foreshock ion enhancements (or just partial bow shock)",undefined,null
+140630,"2019-04-13 17:05:13 UTC","2019-04-13 17:07:33 UTC",burst_segment,mms,Burst,996,"SLAMS with energetic foreshock ion enhancements (or just partial bow shock)",undefined,null
+140631,"2019-04-13 17:07:33 UTC","2019-04-13 17:09:53 UTC",burst_segment,mms,Burst,996,"SLAMS with energetic foreshock ion enhancements (or just partial bow shock)",undefined,null
+140632,"2019-04-13 17:15:23 UTC","2019-04-13 17:17:33 UTC",burst_segment,mms,Burst,996,"SLAMS/partial bow shock encounter with energetic foreshock ion enhancements",undefined,null
+140633,"2019-04-13 17:17:33 UTC","2019-04-13 17:19:43 UTC",burst_segment,mms,Burst,996,"SLAMS/partial bow shock encounter with energetic foreshock ion enhancements",undefined,null
+140634,"2019-04-13 17:19:43 UTC","2019-04-13 17:21:53 UTC",burst_segment,mms,Burst,996,"SLAMS/partial bow shock encounter with energetic foreshock ion enhancements",undefined,null
+140739,"2019-04-15 22:38:43 UTC","2019-04-15 22:41:03 UTC",burst_segment,mms,Burst,996,"SLAMS  with energetic ion enhancements in foreshock",undefined,null
+142356,"2019-05-19 23:37:23 UTC","2019-05-19 23:37:53 UTC",burst_segment,mms,Burst,1006,SLAMs,undefined,null
+142487,"2019-05-23 11:45:13 UTC","2019-05-23 11:47:23 UTC",burst_segment,mms,Burst,1007,"Possible bifurcated CS or nonlinear SLAMS",undefined,null
+150744,"2019-11-06 08:53:53 UTC","2019-11-06 08:57:13 UTC",burst_segment,mms,Burst,1055,"SLAMS/partial bow shock encounter with foreshock populations",undefined,null
+150745,"2019-11-06 09:40:43 UTC","2019-11-06 09:42:03 UTC",burst_segment,mms,Burst,1055,"SLAMS with foreshock populations",undefined,null
+150747,"2019-11-06 11:19:03 UTC","2019-11-06 11:21:23 UTC",burst_segment,mms,Burst,1055,"SLAMS (or partial, brief skimming of bow shock) with foreshock populations",undefined,null
+150748,"2019-11-06 11:21:23 UTC","2019-11-06 11:23:33 UTC",burst_segment,mms,Burst,1055,"SLAMS (or partial, brief skimming of bow shock) with foreshock populations",undefined,null
+150749,"2019-11-06 11:23:33 UTC","2019-11-06 11:25:53 UTC",burst_segment,mms,Burst,1055,"SLAMS (or partial, brief skimming of bow shock) with foreshock populations",undefined,null
+150919,"2019-11-11 08:54:43 UTC","2019-11-11 08:57:43 UTC",burst_segment,mms,Burst,1056,"SLAMS/turbulent foreshock fluctuations and higher energy ions",undefined,null
+165298,"2020-02-14 17:41:43 UTC","2020-02-14 17:46:13 UTC",burst_segment,mms,Burst,1083,"Foreshock waves, monochromatic with period 60 s + possible SLAMS",undefined,null
+155757,"2020-02-14 19:51:03 UTC","2020-02-14 19:53:13 UTC",burst_segment,mms,Burst,1083,"SLAMS? + high-energy ions",undefined,null
+155758,"2020-02-14 19:54:13 UTC","2020-02-14 19:56:33 UTC",burst_segment,mms,Burst,1083,"Weak SLAMS? + E-field 1-5 kHz waves",undefined,null
+155759,"2020-02-14 19:58:43 UTC","2020-02-14 20:01:23 UTC",burst_segment,mms,Burst,1083,"SLAMS?+ E-field 1-10 kHz waves + B-field whistlers",undefined,null
+155714,"2020-02-15 10:39:13 UTC","2020-02-15 10:40:33 UTC",burst_segment,mms,Burst,1084,"Possible SLAMS + ULF waves + E-field kHz waves",undefined,null
+155719,"2020-02-15 12:07:23 UTC","2020-02-15 12:08:23 UTC",burst_segment,mms,Burst,1084,"Short 1-Hz, 10 nT foreshock magnetic field wave train, SLAMS?",undefined,null
+170627,"2020-03-11 03:20:13 UTC","2020-03-11 03:22:23 UTC",burst_segment,mms,Burst,1091,"Partial bow shock or SLAMS with interesting foreshock ions",undefined,null
+170628,"2020-03-11 03:22:23 UTC","2020-03-11 03:24:33 UTC",burst_segment,mms,Burst,1091,"Partial bow shock or SLAMS with interesting foreshock ions",undefined,null
+170629,"2020-03-11 03:24:33 UTC","2020-03-11 03:26:43 UTC",burst_segment,mms,Burst,1091,"Partial bow shock or SLAMS with interesting foreshock ions",undefined,null
+170630,"2020-03-11 03:26:43 UTC","2020-03-11 03:28:53 UTC",burst_segment,mms,Burst,1091,"Partial bow shock or SLAMS with interesting foreshock ions",undefined,null
+170631,"2020-03-11 03:28:53 UTC","2020-03-11 03:31:03 UTC",burst_segment,mms,Burst,1091,"Partial bow shock or SLAMS with interesting foreshock ions",undefined,null
+171145,"2020-03-14 18:13:23 UTC","2020-03-14 18:16:03 UTC",burst_segment,mms,Burst,1092,"SLAMS/ion foreshock",undefined,null
+170851,"2020-03-14 18:26:23 UTC","2020-03-14 18:28:33 UTC",burst_segment,mms,Burst,1092,"SLAMS/ion foreshock B-field fluctuations",undefined,null
+171146,"2020-03-14 18:28:33 UTC","2020-03-14 18:30:43 UTC",burst_segment,mms,Burst,1092,"SLAMS/ion foreshock B-field fluctuations",undefined,null
+170852,"2020-03-14 18:37:03 UTC","2020-03-14 18:38:33 UTC",burst_segment,mms,Burst,1092,"SLAMS/ion foreshock B-field fluctuations",undefined,null
+171189,"2020-03-18 03:27:43 UTC","2020-03-18 03:29:33 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock structure",undefined,null
+171190,"2020-03-18 03:29:33 UTC","2020-03-18 03:31:23 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock structure",undefined,null
+171191,"2020-03-18 03:31:23 UTC","2020-03-18 03:33:13 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock structure",undefined,null
+171192,"2020-03-18 03:42:03 UTC","2020-03-18 03:43:43 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock structures",undefined,null
+171193,"2020-03-18 03:43:43 UTC","2020-03-18 03:45:33 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock structures",undefined,null
+171196,"2020-03-18 03:51:33 UTC","2020-03-18 03:52:53 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock waves and structures",undefined,null
+171338,"2020-03-20 20:11:13 UTC","2020-03-20 20:12:43 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock waves",undefined,null
+171339,"2020-03-20 20:12:43 UTC","2020-03-20 20:14:13 UTC",burst_segment,mms,Burst,1093,"SLAMS/ion foreshock waves",undefined,null
+171458,"2020-03-21 15:38:03 UTC","2020-03-21 15:39:23 UTC",burst_segment,mms,Burst,1094,"SLAMS/Foreshock waves and structures",undefined,null
+171459,"2020-03-21 15:39:23 UTC","2020-03-21 15:40:43 UTC",burst_segment,mms,Burst,1094,"SLAMS/Foreshock waves and structures",undefined,null
+171460,"2020-03-21 15:42:43 UTC","2020-03-21 15:44:03 UTC",burst_segment,mms,Burst,1094,"SLAMS/foreshock structures",undefined,null
+171480,"2020-03-21 17:37:13 UTC","2020-03-21 17:39:33 UTC",burst_segment,mms,Burst,1094,SLAMS,undefined,null
+171481,"2020-03-21 17:39:33 UTC","2020-03-21 17:42:03 UTC",burst_segment,mms,Burst,1094,SLAMS,undefined,null
+171832,"2020-03-25 04:13:53 UTC","2020-03-25 04:16:13 UTC",burst_segment,mms,Burst,1095,"Qpar BS and Foreshock transients (possible SLAMSs)",undefined,null
+171787,"2020-03-25 04:14:33 UTC","2020-03-25 04:16:13 UTC",burst_segment,mms,Burst,1095,"Qpar BS and Foreshock transients (possible SLAMSs)",undefined,null
+171788,"2020-03-25 04:16:13 UTC","2020-03-25 04:17:33 UTC",burst_segment,mms,Burst,1095,"Qpar BS and Foreshock transients (possible SLAMSs)",undefined,null
+171833,"2020-03-25 04:17:33 UTC","2020-03-25 04:19:03 UTC",burst_segment,mms,Burst,1095,"Qpar BS and Foreshock transients (possible SLAMSs)",undefined,null
+172019,"2020-03-28 17:28:13 UTC","2020-03-28 17:30:33 UTC",burst_segment,mms,Burst,1096,"Foreshock tramnsients SLAMS/HFAs",undefined,null
+172020,"2020-03-28 17:30:33 UTC","2020-03-28 17:32:53 UTC",burst_segment,mms,Burst,1096,"Foreshock tramnsients SLAMS/HFAs",undefined,null
+172021,"2020-03-28 17:32:53 UTC","2020-03-28 17:35:13 UTC",burst_segment,mms,Burst,1096,"Foreshock tramnsients SLAMS/HFAs",undefined,null
+172022,"2020-03-28 17:35:13 UTC","2020-03-28 17:37:33 UTC",burst_segment,mms,Burst,1096,"Foreshock tramnsients SLAMS/HFAs",undefined,null
+172023,"2020-03-28 17:37:33 UTC","2020-03-28 17:39:53 UTC",burst_segment,mms,Burst,1096,"Foreshock tramnsients SLAMS/HFAs",undefined,null
+172887,"2020-04-11 21:14:43 UTC","2020-04-11 21:17:33 UTC",burst_segment,mms,Burst,1100,SLAMS?,undefined,null

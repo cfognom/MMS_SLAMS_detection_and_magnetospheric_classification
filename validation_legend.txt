@@ -1,0 +1,8 @@
+1: No removal of short SW, No removal of edge SLAMS, 1, 5, 10 min window, 1 min smoothing of SW, OutlierFraction 0.1, scal 20
+2: Removal of SW under 60 s, Removal of edge SLAMS, 1, 3, 10 min window, 1 min smoothing of SW, OutlierFraction 0.1, scal 20
+3: Removal of SW under 30 s, Removal of edge SLAMS, 1, 3, 10 min window, 1 min smoothing of SW, OutlierFraction 0.1, scal 20
+4: Removal of SW under 60 s, No removal of edge SLAMS, 1, 3, 10 min window, 1 min smoothing of SW, OutlierFraction 0.1, scal 20
+5: No removal of short SW, Removal of edge SLAMS, 1, 3, 10 min window, 3 min smoothing of SW, OutlierFraction 0.1, scal 20
+6: No removal of short SW, Removal of edge SLAMS, 1, 3, 10 min window, 3 min smoothing of SW, OutlierFraction 0.05, scal 10
+7: No removal of short SW, No removal of edge SLAMS, 1, 3, 10 min window, 0 min smoothing of SW, E_omni_variance based SW classifier
+8: No removal of short SW, No removal of edge SLAMS, 1, 3, 10 min window, 3 min median of SW, E_omni_variance based SW classifier
