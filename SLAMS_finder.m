@@ -21,21 +21,13 @@ classdef SLAMS_finder < handle
 
         function data = create_region_data(~, E_ion, E_ion_omni, pos)
             E_bins = log(E_ion);
-            % E_bins = 1:32;
             tot = sum(E_ion_omni, 2);
             E_mean = sum(E_ion_omni.*E_bins, 2)./tot;
             E_MAD = sum(E_ion_omni.*(abs(E_bins - E_mean)), 2)./tot;
             cosang = pos(:,1)./(sqrt(sum(pos.^2, 2)));
             cosang(isnan(cosang)) = 1;
-            % cosang = (cosang/2 + 1/2).^5;
-            % dis(isnan(dis)) = 1;
-            % v_rel = log(abs(v_ion(:,1))./sqrt(sum(v_ion(:,2:3).^2, 2)));
             data = [E_MAD, E_mean, cosang];
         end
-
-        % function y = cluster_tree(tree, n)
-            
-        % end
 
         function SW_train(obj, plot_progress)
             disp('Training SW classifier...')
@@ -53,11 +45,6 @@ classdef SLAMS_finder < handle
             % v_ion = X4(:,2:4);
             pos = X4(:,69:71);
             X = obj.create_region_data(E_ion, E_ion_omni, pos);
-            % X = [X_e_m, X1(:,1), X_e_v];
-            % X = [irf_abs(X(:,2:4), 1), X(:,5) - (irf_abs(X(:,6:7), 1)), X(:,8)];
-            % X = [irf_abs(X(:,2:4), 1), irf_dot(X(:,5:7), [1, 0, 0]), X(:,8)];
-            % X = [irf_abs(X(:,5:7), 1), irf_abs(X(:,11:13), 1), X(:,15)];
-            % X = [irf_abs(X(:,2:4), 1), irf_abs(X(:,8:10), 1), X(:,14)];
             [n, ~] = size(X);
 
             % % Normalize data
@@ -73,47 +60,6 @@ classdef SLAMS_finder < handle
                 ylabel('log(E_{ion} bins) Mean');
                 zlabel('cos(angle)')
             end
-
-            % y = dbscan(X_norm, 0.3, int32(n/60));
-            % y = dbscan(X_norm, 0.2, int32(n/180));
-
-            % Z = linkage(X_norm, 'single', 'euclidean');
-            % % size(Z)
-            % figure;
-            % dendrogram(Z,1000)
-            % df
-
-            % tes = pdist(X_norm);
-            % sq = squareform(tes);
-            % % sq(sq == 0) = 10000;
-            % mindist = mean(sq, 2);
-            % seq = 1:10000;
-            % figure;
-            % plot(seq, mindist)
-            % [rmoutlierdist, idx] = rmoutliers(mindist, 'percentiles', [0, 80]);
-            % figure;
-            % plot(seq(idx == 0), mindist(idx == 0))
-            % X_norm = X_norm(idx == 0, :);
-            % X = X(idx == 0, :);
-
-            % try
-            %     % df
-            %     load('model.mat', 'model')
-            % catch
-            %     rng(90)
-            %     model = fitgmdist(X, 3, 'CovarianceType', 'full', 'SharedCovariance', false, 'Replicates', 1, 'Start', 'randSample', 'Options', statset('Display', 'final', 'MaxIter', 1000,  'TolFun', 1e-12));
-            %     save('model.mat', 'model')
-            % end
-            % y = cluster(model, X);
-
-            % [y, ~, ~, ~, mahaldist] = cluster(model, X);
-            % outliers = all(sqrt(mahaldist) > 2, 2)
-            % unique(outliers)
-            % X_reduced = X(~outliers, :);
-            % rng(90)
-            % model = fitgmdist(X_reduced, 3, 'CovarianceType', 'full', 'SharedCovariance', false, 'Replicates', 1, 'Start', 'randSample', 'Options', statset('Display', 'final', 'MaxIter', 1000,  'TolFun', 1e-12));
-            % y_reduced = cluster(model, X_reduced);
-            % y = cluster(model, X);
 
             % Hierarchical clustering.
             tree = linkage(X, 'average', 'mahalanobis');
@@ -165,39 +111,9 @@ classdef SLAMS_finder < handle
                 zlabel('cos(alpha)')
             end
 
-            % df
-
-            % merge_map = {[1, 3], [5, 6], [2, 4]};
-            % y = merge_clusters(y, merge_map);
-            % merge_map = {[2, 5], 1, [3, 4, 6, 7, 8, 9, 10]};
-            % merge_map = {[2, 5], 1, [3, 4, 6, 7, 8, 9, 10, 11]};
-
             % Create a map to merge gaussians which belong to the same class.
             merge_map = {[2, 3], 1, [4, 5, 6]};
             y = merge_clusters(y, merge_map);
-
-            % ys = unique(y);
-            % counts = hist(y, ys);
-            % [~, idx] = sort(counts, 'descend');
-            % rang = 1:2;
-            % ys = ys(idx(rang));
-            % idx = ismember(y, ys);
-            % X_trim = X(idx, :);
-            % y_trim = y(idx);
-
-            % y(y == 1200) = 1;
-            % y(y == 1201) = 2;
-            % y(y == 1203) = 3;
-            % y(y == 1205) = 4;
-            % y(idx == 0) = -1;
-            % y(idx) = rng;
-            % unique(y_trim)
-            % y = cluster(Z, 'Maxclust', 4);
-
-            % figure;
-            % histogram(y, length(unique(y)))
-            % y = spectralcluster(X_norm, 5)
-            % unique(y)
 
             if plot_progress % && false
                 figure;
@@ -209,36 +125,12 @@ classdef SLAMS_finder < handle
                 zlabel('cos(alpha)')
             end
 
-            % df
-
-            % model1 = fitcsvm(X(y == 1, :), nonzeros(y == 1), 'Kernelscale', scal, 'Standardize', true, 'KernelFunction', 'rbf');
-            % model2 = fitcsvm(X(y == 2, :), nonzeros(y == 2), 'Kernelscale', scal, 'Standardize', true, 'KernelFunction', 'rbf');
-            % model3 = fitcsvm(X(y == -1, :), nonzeros(y == -1), 'Kernelscale', scal, 'Standardize', true, 'KernelFunction', 'rbf', 'OutlierFraction', 0.1);
-            % sw_idx = y_trim == 1200;
-            % numClasses = length(unique(y));
-            % model = cell(numClasses, 1);
-            % % rng(100);
-            % for i = 1:numClasses
-            %     y_tmp = y == i;
-            %     unique(y_tmp)
-            %     % if i == 3
-            %     %     model{i} = fitcsvm(X, y_tmp, 'BoxConstraint', 0.03, 'Kernelscale', 1, 'Standardize', true, 'KernelFunction', 'rbf', 'OutlierFraction', 0, 'Weights', y_tmp + 0.01);
-            %     % else BoxConstraint = 0.03
-            %         model{i} = fitcsvm(X(y_tmp, :), y_tmp(y_tmp), 'BoxConstraint', 1, 'Kernelscale', 1, 'Standardize', true, 'KernelFunction', 'rbf', 'OutlierFraction', 0.10, 'ScoreTransform', @(x) (0.01*x./(abs(0.01*x) + 1) + 1)/2);
-            %     % end
-            %     % model{i} = fitPosterior(model{i});
-
-            %     % X_tmp = X(y_tmp, :);
-            %     % model{i} = struct('mu', mean(X_tmp, 1), 'sigma', cov(X_tmp));
-            % end
-
             obj.region_classifier = @classifierFunction;
             obj.model_region = model;
 
             y = obj.region_classifier(X);
 
             % [t, probs, mahaldist, logpdf, nlogL] = obj.region_classifier([0.5, 7, 0])
-            % unique(y)
 
             if plot_progress
                 % Create boundary points
@@ -277,63 +169,18 @@ classdef SLAMS_finder < handle
                 zlabel('cos(alpha)')
             end
 
-            % ff
-
-            % hold on;
-            % scatter3(C(:,1), C(:,2), C(:,3), 20, 'k', 'filled')
-            % view(3)
-
             function [y, probs, mahaldist, logpdf, nlogL] = classifierFunction(X)
                 [n, ~] = size(X);
                 l = length(merge_map);
                 probs = zeros(n, l);
                 mahaldist = zeros(n, l);
                 [y, nlogL, P, logpdf, d2] = cluster(model, X);
-                % post = posterior(model, X);
-                % [y,nlogL,P,logpdf,d2] = cluster(model, X);
-                % probs = pdf(model, X);
-                % probs = logpdf;
-                % prop = zeros(n, l);
-                % mahaldists = sqrt(mahal(model, X));
-                % % idx = zeros(n, l)
-                % % model.ComponentProportion
-                % % unique(prop)
-                % mahaldists = reshape(mahaldists, [], 1);
-                % tmp_probs = 2*normcdf(-mahaldists, 0, 1);
-                % tmp_probs = reshape(tmp_probs, [], model.NumComponents);
-                % tmp_probs = tmp_probs.*(model.ComponentProportion);
-                % model.ComponentProportion
                 for j = 1:l
                     probs(:,j) = sum(P(:, merge_map{j}), 2);
                     mahaldist(:,j) = min(d2(:, merge_map{j}), [], 2);
                     % idx(:,i) = model.ComponentProportion(merge_map{i}(idx));
                 end
                 mahaldist = sqrt(mahaldist);
-                % for j = 1:numClasses
-                %     [~, prob] = predict(model{j}, X);
-                %     % prob = sum(post(:, correction{j}), 2);
-                %     % prob = mvnpdf(X, model{j}.mu, model{j}.sigma);
-                %     % size(prob)
-                %     % prob = mvksdensity(model{j}, X, 'Bandwidth', 0.01, 'Kernel', 'epanechnikov');
-                %     if nargin > 1 && smoothWindowSize > 1
-                %         prob = movmean(prob, smoothWindowSize*1e9, 1, 'SamplePoints', t.epoch);
-                %         % score2 = movmean(score2, smoothWindowSize*1e9, 1, 'SamplePoints', t.epoch);
-                %         % score3 = movmean(score3, smoothWindowSize*1e9, 1, 'SamplePoints', t.epoch);
-                %     end
-                %     % prob = (score + model{j}.Nu).*((model{j}.KernelParameters.Scale/pi)^(3/2)/sum(model{j}.Alpha));
-                %     % prob = score;
-                %     probs(:, j) = prob;
-                %     % score = [score1, score2, score3];
-                %     % score = score1;
-                % end
-                % % probs(1:10,:)
-                % [~, y] = min(mahaldist, [], 2);
-                % % y = cluster(model, X);
-                % % probs = posterior(model, X);
-                % % for i = 1:l
-                % %     probs(:,i) = max(probs(:, merge_map{i}), [], 2);
-                % %     % idx(:,i) = model.ComponentProportion(merge_map{i}(idx));
-                % % end
                 y = merge_clusters(y, merge_map);
             end
 
@@ -353,22 +200,11 @@ classdef SLAMS_finder < handle
             obj.load_ts({'E_ion', 'E_ion_omni', 'pos'});
 
             t = obj.ts.E_ion_omni.time;
-            % % t = v_ion.time;
-            % % v_ion = v_ion.resample(b_abs);
-            % % v_ion = v_ion.resample(b_abs);
-            % v_ion_abs = obj.ts.v_ion_abs.resample(obj.ts.b_abs);
-            % n_ion = obj.ts.n_ion.resample(obj.ts.b_abs);
             pos = obj.ts.pos.resample(obj.ts.E_ion_omni);
-
-            % X = [obj.ts.b_abs.data, v_ion_abs.data, n_ion.data];
 
             X = obj.create_region_data(obj.ts.E_ion.data, obj.ts.E_ion_omni.data, pos.data);
             % size(X)
 
-            % X = [b_abs.data, v_ion.data(:, 1) - irf_abs(v_ion.data(:, 2:3), 1), n_ion.data];
-            % X = [b_abs.data, irf_dot(v_ion.data(:, 1:3), [1, 0, 0]), n_ion.data];
-            % [y, prob] = obj.region_classifier(X, r.SW_smoothing, t);
-            % n = length(r.smoothWindowSize) + 1;
             [y, probs, mahaldist, logpdf, nlogL] = obj.region_classifier(X);
             % if r.smoothWindowSize > 0
             %     probs = movmean(probs, smoothWindowSize*1e9, 1, 'SamplePoints', t.epoch);
@@ -474,44 +310,6 @@ classdef SLAMS_finder < handle
             end
         end
 
-        function tints_SLAMS = SLAMS_classify_experimental(obj)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            obj.load_ts({'b', 'b_abs'})
-
-            FT = fft(obj.ts.b_abs.data, [], 1);
-            N = fix(length(FT)/2);
-            N_clear = N - 60;
-            FT = fftshift(FT);
-            FT(1:N_clear) = 0;
-            FT(end - N_clear + 1:end) = 0;
-            FT = ifftshift(FT);
-            
-            b_smooth = TSeries(obj.ts.b_abs.time, ifft(FT, 'symmetric'));
-
-            [B, TF] = rmoutliers(b_smooth.data, 'movmean', 60*1e9, 'ThresholdFactor', 1.5, 'SamplePoints', double(obj.ts.b_abs.time.epoch));
-            b_o = TSeries(obj.ts.b_abs.time(~TF), B);
-            b_mean = TSeries(obj.ts.b_abs.time, movmean(obj.ts.b_abs.data, 60*1e9, 1, 'SamplePoints', obj.ts.b_abs.time.epoch));
-            % b_mean = moving_window_func(obj.ts.b_abs, 30, @(x) harmmean(x.data), obj.ts.b_abs.time);
-            % b_std = TSeries(obj.ts.b_abs.time, movstd(obj.ts.b_abs.data, 30*1e9, 1, 'SamplePoints', obj.ts.b_abs.time.epoch));
-            % b_dev = TSeries(obj.ts.b_abs.time, obj.ts.b_abs.data - b_mean.data);
-            % b_reldev = b_dev/b_mean;
-            % [label, bg] = test_onepatatime(obj.ts.b_abs.data, 320);
-            % b_label = TSeries(obj.ts.b_abs.time, label');
-            % b_bg = TSeries(obj.ts.b_abs.time, bg');
-
-            b_label = TSeries(obj.ts.b_abs.time, double(TF));
-
-            tints_cell_NOTSLAMS_SLAMS = labels2tints(b_label, [0,1]);
-            tints_SLAMS = tints_cell_NOTSLAMS_SLAMS{2};
-
-            obj.last_run_results.SLAMS_plotter = @plotter;
-            function plotter(plt, name, arg)
-                plt.lineplot(name, b_mean, 'color', 'c');
-                plt.lineplot(name, b_smooth, 'color', 'g', arg{:});
-            end
-        end
-
         function plot_comparison(obj, tint, tints_true_SLAMS)
             obj.load_ts({'b', 'b_abs', 'v_ion', 'v_ion_abs', 'n_ion', 'E_ion_omni', 'E_ion', 'pos'})
 
@@ -579,7 +377,6 @@ classdef SLAMS_finder < handle
 
             p = inputParser;
             addRequired(p, 'tint');
-            addParameter(p, 'Experimental', false)
             addParameter(p, 'Use_SW_classifier', true)
             addParameter(p, 'SW_smoothing', 0)
             addParameter(p, 'ExtraLoadTime', 60)
@@ -596,12 +393,8 @@ classdef SLAMS_finder < handle
             obj.last_run_results = rmfield(obj.last_run_results, fieldnames(obj.last_run_results));
 
             obj.tint_load = [r.tint(1) + -r.ExtraLoadTime, r.tint(2) + r.ExtraLoadTime];
-            if r.Experimental
-                tints_SLAMS = obj.SLAMS_classify_experimental();
-            else
-                tints_SLAMS = obj.SLAMS_classify(r);
-            end
-            if r.Use_SW_classifier && ~r.Experimental
+            tints_SLAMS = obj.SLAMS_classify(r);
+            if r.Use_SW_classifier
                 obj.region_classify(r);
                 % tints_SLAMS_SW = intersect_tints(tints_SW, tints_SLAMS);
                 % tints_SLAMS = intersect_tints(tints_SW, tints_SLAMS);
