@@ -16,7 +16,7 @@ classdef SLAMS_finder < handle
             %   Detailed explanation goes here
             obj.ts = struct;
             obj.last_run_results = struct;
-            obj.SW_train(true);
+            obj.region_train(true);
         end
 
         function data = create_region_data(~, E_ion, E_ion_omni, pos)
@@ -29,7 +29,7 @@ classdef SLAMS_finder < handle
             data = [E_MAD, E_mean, cosang];
         end
 
-        function SW_train(obj, plot_progress)
+        function region_train(obj, plot_progress)
             disp('Training SW classifier...')
             % X1 = readmatrix(['cache/', 'traindata1.txt']);
             X4 = readmatrix(['cache/', 'traindata4.txt']);
@@ -53,12 +53,7 @@ classdef SLAMS_finder < handle
             % X_norm = (X - m)./s;
 
             if plot_progress
-                figure;
-                scatter3(X(:,1), X(:,2), X(:,3), 2)
-                title('Raw data')
-                xlabel('log(E_{ion} bins) MAD');
-                ylabel('log(E_{ion} bins) Mean');
-                zlabel('cos(angle)')
+                plot_points(X, 'Raw_data')
             end
 
             % Hierarchical clustering.
@@ -70,12 +65,7 @@ classdef SLAMS_finder < handle
             y = cluster(tree, 'MaxClust', n_clust);
             
             if plot_progress
-                figure;
-                scatter3(X(:,1), X(:,2), X(:,3), 2, y)
-                title('Hierarchical clusters')
-                xlabel('log(E_{ion} bins) MAD');
-                ylabel('log(E_{ion} bins) Mean');
-                zlabel('cos(alpha)')
+                plot_points(X, 'Hierarchical clusters', y)
             end
 
             % Get mu, sigma and p of each cluster.
@@ -102,13 +92,7 @@ classdef SLAMS_finder < handle
             y = cluster(model, X);
 
             if plot_progress
-                figure;
-                cVec = [1 0 0; 0 0.8 0; 0 0 1; 0 1 1; 1 0 1; 0 0 0];
-                scatter3(X(:,1), X(:,2), X(:,3), 2, cVec(y, :))
-                title('GMM clusters')
-                xlabel('log(E_{ion} bins) MAD');
-                ylabel('log(E_{ion} bins) Mean');
-                zlabel('cos(alpha)')
+                plot_points(X, 'GMM clusters', y)
             end
 
             % Create a map to merge gaussians which belong to the same class.
@@ -116,13 +100,7 @@ classdef SLAMS_finder < handle
             y = merge_clusters(y, merge_map);
 
             if plot_progress % && false
-                figure;
-                cVec = [1 0 0; 0 0.8 0; 0 0 1; 0 1 1; 1 0 1];
-                scatter3(X(:,1), X(:,2), X(:,3), 2, cVec(y, :))
-                title('Merged clusters')
-                xlabel('log(E_{ion} bins) MAD');
-                ylabel('log(E_{ion} bins) Mean');
-                zlabel('cos(alpha)')
+                plot_points(X, 'Merged clusters', y)
             end
 
             obj.region_classifier = @classifierFunction;
@@ -157,16 +135,7 @@ classdef SLAMS_finder < handle
                 % bound = all(prob_test > 0.00 & prob_test < 0.05, 2);
                 X_bound = X_bound(bound,:);
 
-                figure;
-                cVec = [1 0 0; 0 0.8 0; 0 0 1; 0 1 1; 1 0 1];
-                % c = y == 1:max(y);
-                scatter3(X(:,1), X(:,2), X(:,3), 2, cVec(y, :))
-                hold on
-                scatter3(X_bound(:,1), X_bound(:,2), X_bound(:,3), 2, [0, 0, 0])
-                title('Classified raw data')
-                xlabel('log(Energy) MAD');
-                ylabel('log(Energy) Mean');
-                zlabel('cos(alpha)')
+                plot_points(X, 'Classified raw data', y, X_bound)
             end
 
             function [y, probs, mahaldist, logpdf, nlogL] = classifierFunction(X)
@@ -193,6 +162,30 @@ classdef SLAMS_finder < handle
                 for k = 1:l
                     y(idx{k}) = k;
                 end
+            end
+
+            function plot_points(X, name, y, X_bound)
+                figure;
+                if nargin == 2
+                    scatter3(X(:,1), X(:,2), X(:,3), 2)
+                else
+                    cVec = [1 0 0; 0 0.8 0; 0 0 1; 0 1 1; 1 0 1];
+                    [l, ~] = size(cVec);
+                    if length(unique(y)) > l
+                        c = y;
+                    else
+                        c = cVec(y, :);
+                    end
+                    scatter3(X(:,1), X(:,2), X(:,3), 2, c)
+                    if nargin == 4
+                        hold on
+                        scatter3(X_bound(:,1), X_bound(:,2), X_bound(:,3), 2, [0, 0, 0])
+                    end
+                end
+                title(name)
+                xlabel('log(E_{ion} bins) MAD');
+                ylabel('log(E_{ion} bins) Mean');
+                zlabel('cos(alpha)')
             end
         end
 
