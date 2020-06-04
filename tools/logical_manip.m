@@ -1,7 +1,7 @@
 function logic = logical_manip(logic, method)
 %LOGICAL_MANIP Summary of this function goes here
 %   Detailed explanation goes here
-    logical(logic)
+    % logical(logic)
     if nargin == 1
         method = 'firstOfSimilar';
     end
