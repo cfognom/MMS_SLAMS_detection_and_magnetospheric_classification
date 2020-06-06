@@ -7,7 +7,7 @@ tints_search_user = get_tints_user();
 
 tints_active = get_tints_active(tints_search_user);
 
-finder = SLAMS_finder();
+finder = SLAMS_finder('Show_train_progress', true);
 
 labeled_files = dir('labeled/data/*.txt');
 rng(100);
@@ -15,15 +15,14 @@ labeled_files = labeled_files(randperm(length(labeled_files)));
 % labeled_files = labeled_files(1:2);
 
 settings = {
-    'Use_SW_classifier', true, ...
-    'SW_smoothing', 0, ...
-    'ExtraLoadTime', 3*60, ...
-    'SLAMS_B_bg_method', 'median' ...
-    'SLAMS_B_bg_window', 60 ...
-    'SLAMS_Threshold', 2 ...
-    'SLAMS_DeltaMaxMerge', 0.5 ...
-    'SLAMS_MinDur', 1 ...
-    'Compute_B_max', false
+    'Include_B_stats', true, ...
+    'Include_region_stats', true, ...
+    'Region_time_windows', [15, 30, 60, 2*60, 4*60, 8*60], ...
+    'Include_GSE_coords', true, ...
+    'Extra_load_time', 4*60, ...
+    'SLAMS_B_bg_method', 'median', ...
+    'SLAMS_B_bg_window', 60, ...
+    'SLAMS_threshold', 2
 };
 
 all_results = [];
@@ -31,13 +30,13 @@ run_count = 0;
 
 fileID = fopen('validation_results.txt', 'w');
 for bgmtd = ["median", "mean", "harmmean"]
-    settings{8} = char(bgmtd);
+    settings = setting_setter(settings, 'SLAMS_B_bg_method', char(bgmtd));
     for bgtime = [60, 3*60, 10*60]
-        settings{10} = bgtime;
-        settings{6} = max(bgtime, settings{6});
+        settings = setting_setter(settings, 'SLAMS_B_bg_window', bgtime);
+        % settings{6} = max(bgtime, settings{6});
         for thresh = [1.8, 2, 2.5]
             run_count = run_count + 1;
-            settings{12} = thresh;
+            settings = setting_setter(settings, 'SLAMS_threshold', thresh);
             results = validate(finder, labeled_files, settings, 'Plot', true);
             results.bgmtd = bgmtd;
             results.bgtime = bgtime;
@@ -69,38 +68,47 @@ function results = validate(finder, labeled_files, settings, varargin)
         records{i} = labeled;
         tint = labeled.tint;
 
-        tints_pred_SLAMS = r.finder.evaluate(tint, settings{:});
-        % tints_pred_SLAMS = finder.evaluate(tint, 'Experimental', true);
+        SLAMS = r.finder.evaluate(tint, settings{:});
+        % if ~isempty(SLAMS)
+        %     SLAMS.region_posterior
+        %     SLAMS.region_posterior_windows
+        %     df
+        % end
         if r.Plot
             r.finder.plot_comparison(tint, labeled.tints_true_SLAMS);
         end
-        records{i}.tints_pred_SLAMS = tints_pred_SLAMS;
+        records{i}.SLAMS = SLAMS;
     end
-    records = [records{:}];
-
-    [precision, recall, F1] = calc_performance(records);
-    results.precision = precision;
-    results.recall = recall;
-    results.F1 = F1;
+    records = vertcat(records{:});
+    
+    if ~isempty([records.SLAMS])
+        [precision, recall, F1] = calc_performance(records);
+        results.precision = precision;
+        results.recall = recall;
+        results.F1 = F1;
+    else
+        results.precision = nan;
+        results.recall = nan;
+        results.F1 = nan;
+    end
 end
 
 function print_run(fileID, run_count, settings, results)
     fprintf(fileID, '--- run %u -----------------------------------------------', run_count);
-    fprintf(fileID, '\nSettings:');
-    fprintf(fileID, '\n\t%s: %s', settings{1}, mat2str(settings{2}));
-    fprintf(fileID, '\n\t%s: %f', settings{3}, settings{4});
-    fprintf(fileID, '\n\t%s: %f', settings{5}, settings{6});
-    fprintf(fileID, '\n\t%s: %s', settings{7}, settings{8});
-    fprintf(fileID, '\n\t%s: %f', settings{9}, settings{10});
-    fprintf(fileID, '\n\t%s: %f', settings{11}, settings{12});
-    fprintf(fileID, '\n\t%s: %f', settings{13}, settings{14});
-    fprintf(fileID, '\n\t%s: %f', settings{15}, settings{16});
-    fprintf(fileID, '\n\t%s: %s', settings{17}, mat2str(settings{18}));
-    fprintf(fileID, '\nResults:');
-    fprintf(fileID, '\n\tPrecision: %f', results.precision);
-    fprintf(fileID, '\n\tRecall: %f', results.recall);
-    fprintf(fileID, '\n\tF1: %f', results.F1);
-    fprintf(fileID, '\n');
+
+    settings_str = construct_settings_string(settings);
+    settings_str = vertcat({'Settings:'}, settings_str);
+    settings_str = [strjoin(settings_str, '\n\t'), '\n'];
+    fprintf(fileID, settings_str);
+
+    results_str = {
+        'Precision', mat2str(results.precision);
+        'Recall', mat2str(results.recall);
+        'F1', mat2str(results.F1)
+    };
+    results_str = join(results_str, ' = ');
+    results_str = [strjoin(results_str, '\n\t'), '\n'];
+    fprintf(fileID, results_str);
 end
 
 function plot_precision_recall(results)
@@ -166,8 +174,9 @@ function labeled = load_labeled(file)
 end
 
 function [precision, recall, F1] = calc_performance(records)
+    SLAMS = [records.SLAMS];
     tints_true_SLAMS = [records.tints_true_SLAMS];
-    tints_pred_SLAMS = [records.tints_pred_SLAMS];
+    tints_pred_SLAMS = sort([[SLAMS.start]; [SLAMS.stop]]);
     [center_true_SLAMS, duration_true_SLAMS] = get_center_and_duration(tints_true_SLAMS);
     [center_pred_SLAMS, duration_pred_SLAMS] = get_center_and_duration(tints_pred_SLAMS);
     center_error_matrix = 1e-9*double(abs(center_true_SLAMS.epoch - center_pred_SLAMS.epoch'));
