@@ -1,1 +1,0 @@
-Searching in time intervals: id, start_UTC, end_UTC, delta_seconds, start_EpochTT, end_EpochTT, delta_EpochTT, B_max, B_max_relative
