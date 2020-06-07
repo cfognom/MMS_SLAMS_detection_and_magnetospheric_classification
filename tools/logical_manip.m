@@ -5,20 +5,31 @@ function logic = logical_manip(logic, method)
     if nargin == 1
         method = 'firstOfSimilar';
     end
-    dif = diff(logic);
-    switch method
-        case 'firstOfSimilar'
-            logic = [true, dif ~= 0];
-        case 'firstOfOne'
-            logic = [logic(1) == 1, dif == 1];
-        case 'firstOfZero'
-            logic = [logic(1) == 0, dif == -1];
-        case 'lastOfSimilar'
-            logic = [dif ~= 0, true];
-        case 'lastOfOne'
-            logic = [dif == -1, logic(end) == 1];
-        case 'lastOfZero'
-            logic = [dif == 1, logic(end) == 0];
+    [row, col] = size(logic);
+    if row == 1
+        logic = execute(logic);
+    elseif col == 1
+        logic = execute(logic');
+        logic = logic';
+    else
+        error('logical_manip can only process vectors. Either n_row or n_col must be 1.');
+    end
+
+    function logic = execute(logic) 
+        switch method
+            case 'firstOfSimilar'
+                logic = [true, xor(logic(2:end), logic(1:end - 1))];
+            case 'firstOfOne'
+                logic = [logic(1) == 1, logic(2:end) & ~logic(1:end - 1)];
+            case 'firstOfZero'
+                logic = [logic(1) == 0, ~logic(2:end) & logic(1:end - 1)];
+            case 'lastOfSimilar'
+                logic = [xor(logic(2:end), logic(1:end - 1)), true];
+            case 'lastOfOne'
+                logic = [~logic(2:end) & logic(1:end - 1), logic(end) == 1];
+            case 'lastOfZero'
+                logic = [logic(2:end) & ~logic(1:end - 1), logic(end) == 0];
+        end
     end
 end
 
