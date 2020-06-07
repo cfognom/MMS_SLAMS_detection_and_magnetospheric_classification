@@ -308,7 +308,7 @@ classdef modular_plot < handle
                     elseif button == 3 || button == 8 % Delete
                         if i_pt == 1 && count > 1 % Delete finshed
                             [~, idx] = min(min(abs(pts - tmp_pt), [], 2), [], 1);
-                            pts(idx, :) = [];
+                            pts(idx, :) = []; %#ok<AGROW>
                             delete(hdl_mark(idx))
                             hdl_mark(idx) = [];
                             count = count - 1;
@@ -319,7 +319,7 @@ classdef modular_plot < handle
                         end
                     end
                 end
-                pts(count, 1:n_pt_batch) = pt;
+                pts(count, 1:n_pt_batch) = pt; %#ok<AGROW>
                 if n_pt_batch == 2
                     fprintf('Selected %.1fs interval.\n', pt(2) - pt(1))
                     hdl_mark(count) = irf_pl_mark(hca, pt, r.color, 'EdgeColor', r.color);
