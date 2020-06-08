@@ -1,13 +1,13 @@
 classdef SLAMS_finder < handle
-    %SLAMS_FINDER Summary of this class goes here
-    %   Detailed explanation goes here
+    %SLAMS_FINDER Finds SLAMS
+    %   Instatiate this class and then run the method evaluate to find SLAMS.
+    %   Check the constructor and the evaluate method for valid name value pairs.
     
     properties
         region_classifier
         n_classes
         ts
         last_run_results
-        % model_region
         tint_load
         tint
         sc
@@ -15,8 +15,6 @@ classdef SLAMS_finder < handle
     
     methods
         function obj = SLAMS_finder(varargin)
-            %SLAMS_FINDER Construct an instance of this class
-            %   Detailed explanation goes here
 
             p = inputParser;
             addParameter(p, 'Show_train_progress', false)
@@ -32,112 +30,60 @@ classdef SLAMS_finder < handle
 
         function data = create_region_data(~, E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion)
             E_bins_center = log(E_ion_bin_center);
-            % E_bins_center = 1:32;
             E_per_bin = E_ion_omni.*E_ion_bin_delta;
-            % N_per_bin = E_per_bin./E_bins_center;
-            % E_per_bin = E_ion_omni;
-            % N_bins = E_per_bin./E_bins_center;
             E_tot = sum(E_per_bin, 2);
-            % N_tot = sum(N_per_bin, 2);
-            % Echar = E_tot./N_tot;
             E_mean = sum(E_per_bin.*E_bins_center, 2)./E_tot;
             E_MAD = sum(E_per_bin.*(abs(E_bins_center - E_mean)), 2)./E_tot;
-            % cosang = pos(:,1)./(sqrt(sum(pos.^2, 2)));
-            % cosang(isnan(cosang)) = 1;
             ang = acos(-v_ion(:,1)./sqrt(sum(v_ion.^2, 2)))/pi;
             ang = log(ang);
-            % mean(v_ion, 1)
-            % size(v_ion)
-            % tmp = v_ion(:,1).*(1./(1 + 0.05.*sqrt(sum(v_ion(:,2:3).^2, 2))));
             data = [E_MAD, E_mean, ang];
         end
 
         function region_train(obj, plot_progress)
             disp('Training region classifier...')
-            % X1 = readmatrix(['cache/', 'traindata1.txt']);
             X4 = readmatrix(['cache/', 'traindata4.txt']);
             X5 = readmatrix(['cache/', 'traindata5.txt']);
-            % train_data2 = readmatrix([cache_path, 'traindata2.txt']);
 
-            % X = [irf_abs(X1(:,2:4), 1), irf_abs(X1(:,5:7), 1), X1(:,8)];
-            % X_n = X1(:,8);
-            % X_b = irf_abs(X1(:,2:4), 1);
             E_ion_bin_center = X4(:,37:68);
             E_ion_bin_delta = X5(:,2:33);
             E_ion_omni = X4(:,5:36);
             v_ion = X4(:,2:4);
-            % pos = X4(:,69:71);
             X = obj.create_region_data(E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion);
             [n, ~] = size(X);
+
+            if plot_progress
+                plot_points(X, 'Raw data')
+            end
 
             % Normalize data
             m = mean(X);
             s = std(X);
             X_norm = (X - m)./s;
 
-            if plot_progress
-                plot_points(X, 'Raw data')
-            end
-
-            % Hierarchical clustering.
+            % Hierarchical clustering
             tree = linkage(X_norm, 'average', 'euclidean');
-            % y = cluster(Z, 'Cutoff', 0.1, 'Criterion', 'distance');
 
-            % Lowest number of clusters that separates MSH, SW and MSP.
+            % Lowest number of clusters that separates MSP, SW, MSH and FS
             n_clust = 10;
             y = cluster(tree, 'MaxClust', n_clust);
-            % y = dbscan(X_norm, 0.15, 100, 'Distance', 'squaredeuclidean');
-            % s = [-0.5, 1.7, 1.2;
-            %     -1.5, -1, -1.2;
-            %     0.4, -0.6, 0.33;
-            %     1, -0.2, -1];
-            % y = kmeans(X_norm, 4, 'Start', s);
-            % y = cluster(tree,'Cutoff',  1.5, 'Criterion', 'distance');
             
-            % try
-            %     % df
-            %     y = readmatrix('y3.txt');
-            % catch
-            %     % k = ceil(size(X_norm, 1)^0.5);
-            %     % SimMatrix = SNN(X_norm, k);
-            %     % SimMatrix = k - SimMatrix;
-            %     % Eps = 58;
-            %     % MinPts = 70;
-            %     % y = Mdbscan(X_norm, MinPts, Eps, SimMatrix)';
-
-            %     Ratio=1.7; 
-            %     k = ceil(size(X_norm,1)^0.5);
-            %     SimMatrix = SNN(X_norm, k);
-            %     SimMatrix = k - SimMatrix;
-            %     Eps = 57;
-            %     % threshold = 0.5796;
-            %     threshold = 0.90;
-            %     eta = Eps*Ratio;
-            %     y = DRSCAN(X_norm, threshold, Eps, eta, SimMatrix)';
-
-            %     unique(y)
-            %     writematrix(y, 'y3.txt')
-            % end
             if plot_progress
                 plot_points(X, 'Hierarchical clusters', y)
             end
             
-            % % merge_map = {[2, 6], 3, [5, 1], 4};
-            % merge_map = {[1, 3], [2, 4], [5, 7], [6, 8], [9, 10]};
+            % Merge clusters which belong to same class
             merge_map = {[8, 9], [5, 7], [1, 4], [2, 6, 10], 3};
-            % % merge_map = {[2, 3], 5, 1, 6, 4, 7};
             y = merge_clusters(y, merge_map);
-            % outlier = ismember(y, [5]);
-            % X_no = X(~outlier, :);
-            % y = y(~outlier);
-            n_clust = length(unique(y)) - 1;
-            obj.n_classes = n_clust;
 
-            if plot_progress % && false
+            if plot_progress
                 plot_points(X, 'Merged clusters', y)
             end
 
-            % Get mu, sigma and p of each cluster.
+            % Cluster 5 is discarded for a better fit (-1)
+            n_clust = length(unique(y)) - 1;
+            obj.n_classes = n_clust;
+
+            % Get mu, sigma and p of each cluster
             mu = zeros(n_clust, 3);
             sig = zeros(3, 3, n_clust);
             p = zeros(n_clust, 1);
@@ -150,110 +96,35 @@ classdef SLAMS_finder < handle
                 p(i) = nnz(logic)/n;
             end
 
-            % % If cluster is small (p is low) remove it.
-            % max(p)
-            % idx_small = p < 0.003;
-            % mu(idx_small, :) = [];
-            % sig(:, :, idx_small) = [];
-            % p(idx_small) = [];
-            % p
-
-            % Create GMM of remaining clusters.
-            % p(4) = p(4)*0.5
+            % Create GMM of each cluster
             model = gmdistribution(mu, sig, p);
-            % model.ComponentProportion
-            % options = statset('Display', 'final', 'MaxIter', 1500, 'TolFun', 1e-3);
-            % rng(101)
-            % % S.mu = [
-            % %     0.4, 9.5, -0.5;
-            % %     0.2, 7, -3.5;
-            % %     0.7, 7.2, -1.5;
-            % %     0.9, 7.2, -3.5
-            % % ];
-            % % S.Sigma = repmat(eye(3)*0.4, [1, 1, 4]);
-            % % S.ComponentProportion = [1, 2, 2, 1];
-            % under = X(:, 3) < -2.7;
-            % model = fitgmdist(X(under, :), 2, 'Start', 'randSample', 'Replicates', 1, 'Options', options);
-            % rng(11)
-            % model = fitgmdist(X, 4, 'Start', 'randSample', 'Replicates', 1, 'Options', options);
-            % model = gmdistribution(S.mu, S.Sigma, S.ComponentProportion);
-            % if plot_progress
-            %     tmp = 1:n_clust;
-            %     tmp = tmp(~idx_small);
-            %     logic = ismember(y, tmp);
-            %     % unique(y(logic))
-            %     y = normalize_y(y(logic));
-            %     % unique(y)
-            %     plot_points(X(logic, :), 'reduced', y)
-            % end
-            % df
-            y = cluster(model, X);
 
+            % Classify data using GMM model
+            y = cluster(model, X);
 
             if plot_progress
                 plot_points(X, 'GMM clusters', y)
             end
 
-            % Create a map to merge gaussians which belong to the same class.
-            % merge_map = {[2, 3], 1, [4, 5, 6]};
-            % y = merge_clusters(y, merge_map);
-
-            % if plot_progress % && false
-            %     plot_points(X, 'Merged clusters', y)
-            % end
-
             obj.region_classifier = @classifierFunction;
-            % obj.model_region = model;
-
-            y = obj.region_classifier(X);
-
-            % [t, probs, mahaldist, logpdf, nlogL] = obj.region_classifier([0.5, 7, 0])
 
             if plot_progress
                 % Create boundary points
                 n_bound = 100;
-                % [b_x, b_y, b_z] = meshgrid(linspace(4, 10, n_bound), linspace(-400, 800, n_bound), linspace(-1, 1, n_bound));
-                % [b_x, b_y, b_z] = meshgrid(linspace(0, 3, n_bound), linspace(4, 10, n_bound), linspace(-1, 1, n_bound));
                 [b_x, b_y, b_z] = meshgrid(linspace(0, 2, n_bound), linspace(5, 10, n_bound), linspace(-8, 1, n_bound));
                 X_bound = [reshape(b_x, [], 1, 1), reshape(b_y, [], 1, 1), reshape(b_z, [], 1, 1)];
-                [~, prob_test, mahal_test, logpdf] = obj.region_classifier(X_bound);
-                % % prob_test(1:10,:)
-                % dif_probs = abs([ ...
-                %     prob_test(:,2) - prob_test(:,3), ...
-                %     prob_test(:,1) - prob_test(:,3), ...
-                %     prob_test(:,1) - prob_test(:,2) ...
-                % ]);
-                % small_dif = (dif_probs < 0.05);
-                % [~, idx] = min(prob_test, [], 2, 'linear');
-                % bound = small_dif(idx);
-                % bound = logpdf > -5 & logpdf < -4;
+                [~, prob_test, ~, ~] = obj.region_classifier(X_bound);
                 bound = any(prob_test > 0.45 & prob_test < 0.55, 2);
-                % bound = any(mahal_test > 6 & prob_test < 7, 2);
-                % bound = any(prob_test > 0.01 & prob_test < 0.05, 2);
-                % bound = any(prob_test > 0.85 & prob_test < 0.95, 2);
-                % bound = any(prob_test > 0.15 & prob_test < 0.25, 2);
-                % bound = any(prob_test > -0.05 & prob_test < 0.05, 2);
-                % bound = all(prob_test > 0.00 & prob_test < 0.05, 2);
                 X_bound = X_bound(bound,:);
+                
+                y = obj.region_classifier(X);
 
-                plot_points(X, 'Classified raw data', y, X_bound)
+                plot_points(X, 'GMM clusters with boundary', y, X_bound)
             end
 
-            % df
-
             function [y, probs, mahaldist, logpdf] = classifierFunction(X)
-                [n, ~] = size(X);
-                % l = length(merge_map);
-                % probs = zeros(n, l);
-                % mahaldist = zeros(n, l);
                 [y, ~, probs, logpdf, d2] = cluster(model, X);
-                % for j = 1:l
-                %     probs(:,j) = sum(P(:, merge_map{j}), 2);
-                %     mahaldist(:,j) = min(d2(:, merge_map{j}), [], 2);
-                %     % idx(:,i) = model.ComponentProportion(merge_map{i}(idx));
-                % end
                 mahaldist = sqrt(d2);
-                % y = merge_clusters(y, merge_map);
             end
 
             function y = merge_clusters(y, map)
@@ -306,38 +177,22 @@ classdef SLAMS_finder < handle
             end
         end
 
-        function [probs, mahaldist, logpdf] = region_classify(obj, r)
+        function [probs, mahaldist, logpdf] = region_classify(obj)
             obj.load_ts({'E_ion_center', 'E_ion_delta', 'E_ion_omni', 'v_ion'});
 
             t = obj.ts.E_ion_omni.time;
-            % pos = obj.ts.pos.resample(obj.ts.E_ion_omni);
 
-            % X = obj.create_region_data(obj.ts.E_ion_center.data, obj.ts.E_ion_omni.data, pos.data);
             X = obj.create_region_data(obj.ts.E_ion_center.data, obj.ts.E_ion_delta.data, obj.ts.E_ion_omni.data, obj.ts.v_ion.data);
-            % size(X)
 
             [y, probs, mahaldist, logpdf] = obj.region_classifier(X);
-            % if r.smoothWindowSize > 0
-            %     probs = movmean(probs, smoothWindowSize*1e9, 1, 'SamplePoints', t.epoch);
-            %     logpdf = movmean(logpdf, smoothWindowSize*1e9, 1, 'SamplePoints', t.epoch);
-            %     mahaldist = movmean(mahaldist, smoothWindowSize*1e9, 1, 'SamplePoints', t.epoch);
-            % end
+
             probs = TSeries(t, probs);
             mahaldist = TSeries(t, mahaldist);
             logpdf = TSeries(t, logpdf);
-            % region = struct('nlogL', nlogL, )
-            % prob = v_ion.data(:, 1)./(1 + irf_abs(v_ion.data(:, 2:3), 1));
-            % y = double(prob < -3);
-            % prob = TSeries(v_ion.time, prob);
-            % ys = TSeries(v_ion.time, y);
 
             ts_label = TSeries(t, y);
-            % ts_label = moving_window_func(ts_label, 60, @(x) majorityVote(x.data), t);
             tints_cell_region = labels2tints(ts_label, 1:obj.n_classes);
             obj.last_run_results.tints_cell_region = tints_cell_region;
-            % tints_SW = tints_cell_region{2};
-            % % tints_SW = remove_short_tints(tints_SW, 60);
-            % tints_SW = remove_empty_tints(tints_SW);
 
             obj.last_run_results.region_plotter = @plotter;
             function plotter(plt)
@@ -350,8 +205,6 @@ classdef SLAMS_finder < handle
         end
         
         function SLAMS = SLAMS_find(obj, r)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
             obj.load_ts({'b', 'b_abs'})
 
             t = obj.ts.b_abs.time;
@@ -388,16 +241,10 @@ classdef SLAMS_finder < handle
             else
                 SLAMS = [];
             end
-
-            
-            % tints_SLAMS = merge_tints(tints_SLAMS, r.SLAMS_DeltaMaxMerge);
-            % tints_SLAMS = remove_short_tints(tints_SLAMS, r.SLAMS_MinDur);
-            % tints_SLAMS = remove_empty_tints(tints_SLAMS);
             
             obj.last_run_results.SLAMS_plotter = @plotter;
             function plotter(plt, name, arg)
                 plt.lineplot(name, obj.ts.b_bg, 'color', 'c');
-                % plt.lineplot(name, b_trigger, 'color', 'g');
                 plt.lineplot(name, b_lower_thresh, 'color', 'm');
                 plt.lineplot(name, b_upper_thresh, 'color', 'r', arg{:});
             end
@@ -450,9 +297,7 @@ classdef SLAMS_finder < handle
             plt.lineplot('B_true', obj.ts.b_abs, 'ylabel', 'Manual');
             plt.lineplot('B', {obj.ts.b, obj.ts.b_abs}, 'ylabel', 'B_{GSE} (nT)');
             plt.lineplot('n_ion', obj.ts.n_ion, 'ylabel', 'n_i (cm^{-3})')
-            % plt.lineplot('T_ion', {T_ion_para, T_ion_perp}, 'ylabel', 'T_{i} (eV)', 'legend', {'T_{ipara}','T_{iperp}'})
             plt.spectrogram('E_ion_omni', {obj.ts.E_ion_omni, obj.ts.E_ion_center}, 'ylabel', 'W_i (eV)')
-            % plt.spectrogram('E_ion_omni', {obj.ts.E_ion_omni.*obj.ts.E_ion_delta, obj.ts.E_ion_center}, 'ylabel', 'W_i (eV)')
             plt.lineplot('v_ion', {obj.ts.v_ion, obj.ts.v_ion_abs}, 'ylabel', 'v_{i} (kms^{-1})', 'legend', {'v_{ix}','v_{iy}','v_{iz}'})
             plt.lineplot('pos', obj.ts.pos/6378, 'ylabel', 'R_{GSE} (R_E)', 'legend', {'x','y','z'})
             plt.show(tint);
@@ -476,21 +321,7 @@ classdef SLAMS_finder < handle
             end
             plt.lineplot('B', {obj.ts.b, obj.ts.b_abs}, 'ylabel', 'B_{GSE} (nT)');
             plt.lineplot('n_ion', obj.ts.n_ion, 'ylabel', 'n_i (cm^{-3})')
-            % plt.lineplot('E_s', obj.ts.E_ion_omni, 'ylabel', 'spectr')
-            % plt.lineplot('E', obj.ts.E_ion_center, 'ylabel', 'energy')
-            % plt.lineplot('T_ion', {T_ion_para, T_ion_perp}, 'ylabel', 'T_{i} (eV)', 'legend', {'T_{ipara}','T_{iperp}'})
             plt.spectrogram('E_ion_omni', {obj.ts.E_ion_omni, obj.ts.E_ion_center}, 'ylabel', 'W_i (eV)')
-
-            % E_bins = obj.ts.E_ion_center.data;
-            % % E_bins = (1:32)/32;
-            % tot = sum(obj.ts.E_ion_omni.data, 2);
-            % X_e_m = sum(obj.ts.E_ion_omni.data.*E_bins, 2)./tot;
-            % X_e_v = sum(obj.ts.E_ion_omni.data.*((E_bins - X_e_m).^6), 2)./tot;
-            % test1 = TSeries(obj.ts.E_ion_omni.time, X_e_m);
-            % test2 = TSeries(obj.ts.E_ion_omni.time, X_e_v);
-            % plt.lineplot('test1', test1, 'ylabel', 'test1')
-            % plt.lineplot('test2', test2, 'ylabel', 'test2')
-
             plt.lineplot('v_ion', {obj.ts.v_ion, obj.ts.v_ion_abs}, 'ylabel', 'v_{i} (kms^{-1})', 'legend', {'v_{ix}','v_{iy}','v_{iz}'})
             plt.lineplot('pos', obj.ts.pos/6378, 'ylabel', 'R_{GSE} (R_E)', 'legend', {'x','y','z'})
             plt.show(tint);
@@ -528,7 +359,7 @@ classdef SLAMS_finder < handle
 
             SLAMS = obj.SLAMS_find(r);
             if r.Include_region_stats
-                [probs, mahaldist, logpdf] = obj.region_classify(r);
+                [probs, mahaldist, logpdf] = obj.region_classify();
             end
             
             if ~isempty(SLAMS)
@@ -559,7 +390,6 @@ classdef SLAMS_finder < handle
                         [SLAMS.region_logpdf] = logpdf_cell{:};
 
                         if ~isempty(r.Region_time_windows)
-                            % SLAMS.region_windows = r.Region_time_windows;
                             n_windows = length(r.Region_time_windows);
                             dt = int64((1e9*r.Region_time_windows)/2);
                             SLAMS_window_start = SLAMS_mid - dt;
@@ -586,7 +416,6 @@ classdef SLAMS_finder < handle
                 end
                 
                 if r.Include_B_stats
-                    % idx_first_last = sort([find(logical_manip(logic_SLAMS', 'firstOfOne')), find(logical_manip(logic_SLAMS', 'lastOfOne'))]);
                     t = obj.ts.b_abs.time.epoch;
                     for j = 1:n_SLAMS
                         logical_idx = (SLAMS(j).start.epoch <= t) & (SLAMS(j).stop.epoch >= t);
@@ -601,12 +430,7 @@ classdef SLAMS_finder < handle
                     end
                 end
             end
-            % tints_SLAMS_SW = intersect_tints(tints_SW, tints_SLAMS);
-            % tints_SLAMS = intersect_tints(tints_SW, tints_SLAMS);
-            % tints_SLAMS = remove_edge_SLAMS(tints_SLAMS_SW, tints_SLAMS);
 
-            % tints_SLAMS = intersect_tints(tints_SLAMS, r.tint);
-            % tints_SLAMS = remove_empty_tints(tints_SLAMS);
             function out = mean3d(inp, logical_inside_window, n_inside_window)
                 [~, n] = size(inp);
                 c = cell(1, n);
