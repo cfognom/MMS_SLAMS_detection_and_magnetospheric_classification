@@ -1,5 +1,9 @@
 sc = 'MMS1';
 
+plot_prediction = false;
+
+save_file_name = 'identified_SLAMS.csv';
+
 settings = {
     'Include_B_stats', true, ...
     'Include_region_stats', true, ...
@@ -12,46 +16,46 @@ settings = {
     'SLAMS_min_duration', 0
 };
 
-tints_search_user = get_tints_user();
+main(sc, settings, save_file_name);
 
-finder = SLAMS_finder('Spacecraft', sc, 'Show_train_progress', false);
+function main(sc, settings, save_file_name, plot_prediction)
+    finder = SLAMS_finder('Spacecraft', sc, 'Show_train_progress', false);
 
-tints_active = get_tints_active(tints_search_user);
-
-tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
-
-n_tints = length(tints_valid)/2;
-
-fileID = fopen('identified_SLAMS.csv', 'w');
-print_info(fileID, settings, tints_search_user, finder);
-% plot_prediction = true;
-plot_prediction = true;
-current_id = 1;
-for i = 23:n_tints
-% for i = 9:n_tints
-% for i = 700:n_tints
-    fprintf('Looking for SLAMS in interval %u/%u\n', i, n_tints);
-    tint = select_tint(tints_valid, i);
-    extra_load_time = setting_get(settings, 'Extra_load_time');
-    tint = [tint(1) + extra_load_time, tint(2) + -extra_load_time];
-    SLAMS = finder.evaluate(tint, settings{:});
-    if plot_prediction
-        finder.plot_prediction(tint);
+    tints_user = get_tints_user();
+    
+    tints_active = get_tints_active(tints_user);
+    
+    tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
+    
+    n_tints = length(tints_valid)/2;
+    
+    fileID = fopen(save_file_name, 'w');
+    print_info(fileID, settings, tints_user, finder);
+    current_id = 1;
+    for i = 1:n_tints
+        fprintf('Looking for SLAMS in interval %u/%u\n', i, n_tints);
+        tint = select_tint(tints_valid, i);
+        extra_load_time = setting_get(settings, 'Extra_load_time');
+        tint = [tint(1) + extra_load_time, tint(2) + -extra_load_time];
+        SLAMS = finder.evaluate(tint, settings{:});
+        if plot_prediction
+            finder.plot_prediction(tint);
+        end
+        current_id = print_SLAMS(fileID, SLAMS, settings, current_id, finder);
     end
-    current_id = print_SLAMS(fileID, SLAMS, settings, current_id, finder);
-    % break;
+    disp('Done!')
+    % fclose(fileID);
+    fclose('all');
 end
-disp('Done!')
-fclose(fileID);
 
-function print_info(fileID, settings, tints_search_user, finder)
+function print_info(fileID, settings, tints_user, finder)
 
     sc_str = {'Spacecraft:', finder.sc};
     sc_str = [strjoin(sc_str, '\n\t'), '\n'];
     fprintf(fileID, sc_str);
 
-    n_t_seach_user = length(tints_search_user);
-    search_tint_str = mat2cell(tints_search_user.utc, repelem(1, n_t_seach_user), 30);
+    n_t_seach_user = length(tints_user);
+    search_tint_str = mat2cell(tints_user.utc, repelem(1, n_t_seach_user), 30);
     search_tint_str = reshape(search_tint_str, 2, [])';
     search_tint_str = join(search_tint_str, ' - ');
     search_tint_str = vertcat({'Time intervals searched:'}, search_tint_str);
@@ -76,7 +80,6 @@ function current_id = print_SLAMS(fileID, SLAMS, settings, current_id, finder)
         id = int64((current_id:(current_id + n_SLAMS - 1))');
         current_id = current_id + n_SLAMS;
         
-        % cel = cell(n_SLAMS, n_cols);
         cell_converter_tool = repelem(1, n_SLAMS);
 
         cel = mat2cell(id, cell_converter_tool, 1);
@@ -178,29 +181,6 @@ function header = construct_header(settings)
             end
         end
     end
-
-        % ...
-        % 'MSH_posterior_15sec_mean', 'SW_posterior_15sec_mean', 'MSP_posterior_15sec_mean', ...
-        % 'MSH_posterior_30sec_mean', 'SW_posterior_30sec_mean', 'MSP_posterior_30sec_mean', ...
-        % 'MSH_posterior_1min_mean', 'SW_posterior_1min_mean', 'MSP_posterior_1min_mean', ...
-        % 'MSH_posterior_2min_mean', 'SW_posterior_2min_mean', 'MSP_posterior_2min_mean', ...
-        % 'MSH_posterior_4min_mean', 'SW_posterior_4min_mean', 'MSP_posterior_4min_mean', ...
-        % 'MSH_posterior_8min_mean', 'SW_posterior_8min_mean', 'MSP_posterior_8min_mean', ...
-        % ...
-        % 'MSH_mahaldist_15sec_mean', 'SW_mahaldist_15sec_mean', 'MSP_mahaldist_15sec_mean', ...
-        % 'MSH_mahaldist_30sec_mean', 'SW_mahaldist_30sec_mean', 'MSP_mahaldist_30sec_mean', ...
-        % 'MSH_mahaldist_1min_mean', 'SW_mahaldist_1min_mean', 'MSP_mahaldist_1min_mean', ...
-        % 'MSH_mahaldist_2min_mean', 'SW_mahaldist_2min_mean', 'MSP_mahaldist_2min_mean', ...
-        % 'MSH_mahaldist_4min_mean', 'SW_mahaldist_4min_mean', 'MSP_mahaldist_4min_mean', ...
-        % 'MSH_mahaldist_8min_mean', 'SW_mahaldist_8min_mean', 'MSP_mahaldist_8min_mean', ...
-        % ...
-        % 'logpdf_15sec_mean', ...
-        % 'logpdf_30sec_mean', ...
-        % 'logpdf_1min_mean', ...
-        % 'logpdf_2min_mean', ...
-        % 'logpdf_4min_mean', ...
-        % 'logpdf_8min_mean'
-    % };
 
     n_cols = length(header);
     column_id = split(num2str(1:n_cols));
