@@ -3,6 +3,8 @@ function tints = remove_short_tints(tints, time_limit)
 %   Detailed explanation goes here
     if isempty(tints)
         tints = [];
+    elseif time_limit == 0
+        return
     else
         dif = diff(tints.epoch);
         dif = dif(1:2:end);

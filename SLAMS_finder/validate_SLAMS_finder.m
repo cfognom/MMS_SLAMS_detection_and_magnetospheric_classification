@@ -1,11 +1,14 @@
-%% Start
-db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\Carl\data\';
-cache_path = 'cache\';
-sc = 'mms1';
-
-tints_search_user = get_tints_user();
-
-tints_active = get_tints_active(tints_search_user);
+settings = {
+    'Include_B_stats', false, ...
+    'Include_region_stats', true, ...
+    'Region_time_windows', [15, 30, 60, 2*60, 4*60, 8*60], ...
+    'Include_GSE_coords', false, ...
+    'Extra_load_time', 30, ...
+    'SLAMS_B_bg_method', 'median', ...
+    'SLAMS_B_bg_window', 60, ...
+    'SLAMS_threshold', 2, ...
+    'SLAMS_min_duration', 0
+};
 
 finder = SLAMS_finder('Show_train_progress', true);
 
@@ -14,35 +17,28 @@ rng(100);
 labeled_files = labeled_files(randperm(length(labeled_files)));
 % labeled_files = labeled_files(1:2);
 
-settings = {
-    'Include_B_stats', true, ...
-    'Include_region_stats', true, ...
-    'Region_time_windows', [15, 30, 60, 2*60, 4*60, 8*60], ...
-    'Include_GSE_coords', true, ...
-    'Extra_load_time', 4*60, ...
-    'SLAMS_B_bg_method', 'median', ...
-    'SLAMS_B_bg_window', 60, ...
-    'SLAMS_threshold', 2
-};
-
 all_results = [];
 run_count = 0;
 
 fileID = fopen('validation_results.txt', 'w');
 for bgmtd = ["median", "mean", "harmmean"]
-    settings = setting_setter(settings, 'SLAMS_B_bg_method', char(bgmtd));
-    for bgtime = [60, 3*60, 10*60]
-        settings = setting_setter(settings, 'SLAMS_B_bg_window', bgtime);
-        % settings{6} = max(bgtime, settings{6});
-        for thresh = [1.8, 2, 2.5]
-            run_count = run_count + 1;
-            settings = setting_setter(settings, 'SLAMS_threshold', thresh);
-            results = validate(finder, labeled_files, settings, 'Plot', true);
-            results.bgmtd = bgmtd;
-            results.bgtime = bgtime;
-            results.thresh = thresh;
-            all_results = [all_results, results]; %#ok<AGROW>
-            print_run(fileID, run_count, settings, results)
+    settings = setting_set(settings, 'SLAMS_B_bg_method', char(bgmtd));
+    for bgtime = [30, 60, 2*60]
+        settings = setting_set(settings, 'SLAMS_B_bg_window', bgtime);
+        settings = setting_set(settings, 'Extra_load_time', bgtime/2);
+        for thresh = [2, 2.5]
+            settings = setting_set(settings, 'SLAMS_threshold', thresh);
+            for min_dur = [0, 1]
+                settings = setting_set(settings, 'SLAMS_min_duration', min_dur);
+                run_count = run_count + 1;
+                results = validate(finder, labeled_files, settings, 'Plot', true);
+                results.bgmtd = bgmtd;
+                results.bgtime = bgtime;
+                results.thresh = thresh;
+                results.min_dur = min_dur;
+                all_results = [all_results, results]; %#ok<AGROW>
+                print_run(fileID, run_count, settings, results)
+            end
         end
     end
 end
@@ -81,7 +77,7 @@ function results = validate(finder, labeled_files, settings, varargin)
     end
     records = vertcat(records{:});
     
-    if ~isempty([records.SLAMS])
+    if ~isempty(vertcat(records.SLAMS))
         [precision, recall, F1] = calc_performance(records);
         results.precision = precision;
         results.recall = recall;
@@ -131,9 +127,9 @@ function plot_precision_recall(results)
         end
 
         switch result.bgtime
-        case 60*10
-            marker_size = 10;
         case 60*3
+            marker_size = 10;
+        case 60*2
             marker_size = 8;
         case 60
             marker_size = 6;
@@ -141,16 +137,24 @@ function plot_precision_recall(results)
 
         switch result.thresh
         case 2.5
-            color_face = 'r';
+            color_face = [1 0 0];
         case 2
-            color_face = 'g';
+            color_face = [0 1 0];
         case 1.8
-            color_face = 'y';
+            color_face = [1 1 0];
+        end
+
+        switch result.min_dur
+        case 0
+            color_face = color_face*0.6;
+        case 1
+            color_face = color_face*1;
         end
 
         plot(result.recall, result.precision, 'Marker', symbol, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', color_face, 'MarkerSize', marker_size);
         xlabel('Recall')
         ylabel('Precision')
+        axis square
     end
 end
 
@@ -174,7 +178,7 @@ function labeled = load_labeled(file)
 end
 
 function [precision, recall, F1] = calc_performance(records)
-    SLAMS = [records.SLAMS];
+    SLAMS = vertcat(records.SLAMS);
     tints_true_SLAMS = [records.tints_true_SLAMS];
     tints_pred_SLAMS = sort([[SLAMS.start]; [SLAMS.stop]]);
     [center_true_SLAMS, duration_true_SLAMS] = get_center_and_duration(tints_true_SLAMS);

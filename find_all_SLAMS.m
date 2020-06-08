@@ -1,13 +1,4 @@
-%% Start
-db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\Carl\data\';
-cache_path = 'cache\';
-sc = 'mms1';
-
-tints_search_user = get_tints_user();
-
-tints_active = get_tints_active(tints_search_user);
-
-finder = SLAMS_finder('Show_train_progress', true);
+sc = 'MMS1';
 
 settings = {
     'Include_B_stats', true, ...
@@ -17,34 +8,47 @@ settings = {
     'Extra_load_time', 4*60, ...
     'SLAMS_B_bg_method', 'median', ...
     'SLAMS_B_bg_window', 60, ...
-    'SLAMS_threshold', 2
+    'SLAMS_threshold', 2, ...
+    'SLAMS_min_duration', 0
 };
 
-n_tints = length(tints_active)/2;
+tints_search_user = get_tints_user();
+
+finder = SLAMS_finder('Spacecraft', sc, 'Show_train_progress', false);
+
+tints_active = get_tints_active(tints_search_user);
+
+tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
+
+n_tints = length(tints_valid)/2;
 
 fileID = fopen('identified_SLAMS.csv', 'w');
-print_info(fileID, settings, tints_search_user);
+print_info(fileID, settings, tints_search_user, finder);
 % plot_prediction = true;
-plot_prediction = false;
+plot_prediction = true;
 current_id = 1;
 for i = 23:n_tints
 % for i = 9:n_tints
 % for i = 700:n_tints
     fprintf('Looking for SLAMS in interval %u/%u\n', i, n_tints);
-    tint = select_tint(tints_active, i);
-    extra_load_time = setting_extractor(settings, 'Extra_load_time');
+    tint = select_tint(tints_valid, i);
+    extra_load_time = setting_get(settings, 'Extra_load_time');
     tint = [tint(1) + extra_load_time, tint(2) + -extra_load_time];
     SLAMS = finder.evaluate(tint, settings{:});
     if plot_prediction
         finder.plot_prediction(tint);
     end
-    current_id = print_SLAMS(fileID, SLAMS, settings, current_id);
+    current_id = print_SLAMS(fileID, SLAMS, settings, current_id, finder);
     % break;
 end
 disp('Done!')
 fclose(fileID);
 
-function print_info(fileID, settings, tints_search_user)
+function print_info(fileID, settings, tints_search_user, finder)
+
+    sc_str = {'Spacecraft:', finder.sc};
+    sc_str = [strjoin(sc_str, '\n\t'), '\n'];
+    fprintf(fileID, sc_str);
 
     n_t_seach_user = length(tints_search_user);
     search_tint_str = mat2cell(tints_search_user.utc, repelem(1, n_t_seach_user), 30);
@@ -54,10 +58,10 @@ function print_info(fileID, settings, tints_search_user)
     search_tint_str = [strjoin(search_tint_str, '\n\t'), '\n'];
     fprintf(fileID, search_tint_str);
 
-    settings_str = construct_settings_string(settings);
-    settings_str = vertcat({'Settings:'}, settings_str);
-    settings_str = [strjoin(settings_str, '\n\t'), '\n'];
-    fprintf(fileID, settings_str);
+    finder_settings_str = construct_settings_string(settings);
+    finder_settings_str = vertcat({'SLAMS finder settings:'}, finder_settings_str);
+    finder_settings_str = [strjoin(finder_settings_str, '\n\t'), '\n'];
+    fprintf(fileID, finder_settings_str);
 
     fprintf(fileID, 'Identified SLAMS:\n');
 
@@ -65,7 +69,7 @@ function print_info(fileID, settings, tints_search_user)
     fprintf(fileID, header_str);
 end
 
-function current_id = print_SLAMS(fileID, SLAMS, settings, current_id)
+function current_id = print_SLAMS(fileID, SLAMS, settings, current_id, finder)
     if ~isempty(SLAMS)
         n_SLAMS = length(SLAMS);
         fprintf('Found %u SLAMS!\n', n_SLAMS);
@@ -87,13 +91,13 @@ function current_id = print_SLAMS(fileID, SLAMS, settings, current_id)
         cel = horzcat(cel, add1, add2, add3, add4);
         str = [str, ', %s, %s, %u, %u'];
 
-        if setting_extractor(settings, 'Include_GSE_coords')
+        if setting_get(settings, 'Include_GSE_coords')
             add1 = mat2cell(vertcat(SLAMS.pos_GSE), cell_converter_tool, [1, 1, 1]);
             cel = horzcat(cel, add1);
             str = [str, ', %f, %f, %f'];
         end
         
-        if setting_extractor(settings, 'Include_B_stats')
+        if setting_get(settings, 'Include_B_stats')
             add1 = mat2cell(vertcat(SLAMS.B_bg_mean), cell_converter_tool, 1);
             add2 = mat2cell(vertcat(SLAMS.B_mean), cell_converter_tool, 1);
             add3 = mat2cell(vertcat(SLAMS.B_max), cell_converter_tool, 1);
@@ -103,17 +107,20 @@ function current_id = print_SLAMS(fileID, SLAMS, settings, current_id)
             str = [str, ', %f, %f, %f, %f, %f'];
         end
         
-        if setting_extractor(settings, 'Include_region_stats')
-            add1 = mat2cell(vertcat(SLAMS.region_posterior), cell_converter_tool, [1, 1, 1]);
-            add2 = mat2cell(vertcat(SLAMS.region_mahaldist), cell_converter_tool, [1, 1, 1]);
+        if setting_get(settings, 'Include_region_stats')
+            cell_converter_tool2 = repelem(1, finder.n_classes);
+            n_cols = (2*finder.n_classes + 1);
+            add1 = mat2cell(vertcat(SLAMS.region_posterior), cell_converter_tool, cell_converter_tool2);
+            add2 = mat2cell(vertcat(SLAMS.region_mahaldist), cell_converter_tool, cell_converter_tool2);
             add3 = mat2cell(vertcat(SLAMS.region_logpdf), cell_converter_tool, 1);
             cel = horzcat(cel, add1, add2, add3);
-            str = [str, ', %f, %f, %f, %f, %f, %f, %f'];
+            str = [str, repmat(', %f', [1, n_cols])];
             
-            windows = setting_extractor(settings, 'Region_time_windows');
+            windows = setting_get(settings, 'Region_time_windows');
             if ~isempty(windows)
                 n_windows = length(windows);
-                cell_converter_tool2 = repelem(1, 7*n_windows);
+                n_cols = n_cols*n_windows;
+                cell_converter_tool3 = repelem(1, n_cols);
                 
                 posteriors = cat(3, SLAMS.region_posterior_windows);
                 posteriors = permute(posteriors, [3, 2, 1]);
@@ -124,10 +131,10 @@ function current_id = print_SLAMS(fileID, SLAMS, settings, current_id)
                 tmp = cat(2, posteriors, mahaldists, logpdfs);
                 tmp = reshape(tmp, n_SLAMS, []);
 
-                add1 = mat2cell(tmp, cell_converter_tool, cell_converter_tool2);
+                add1 = mat2cell(tmp, cell_converter_tool, cell_converter_tool3);
 
                 cel = horzcat(cel, add1);
-                str = [str, repmat(', %f', [1, 7*n_windows])];
+                str = [str, repmat(', %f', [1, n_cols])];
             end
         end
 
@@ -140,30 +147,30 @@ end
 function header = construct_header(settings)
     header = {'id', 'start_UTC', 'stop_UTC', 'start_EpochTT', 'stop_EpochTT'};
 
-    if setting_extractor(settings, 'Include_GSE_coords')
+    if setting_get(settings, 'Include_GSE_coords')
         header_add = {'x_GSE', 'y_GSE', 'z_GSE'};
         header = horzcat(header, header_add);
     end
 
-    if setting_extractor(settings, 'Include_B_stats')
+    if setting_get(settings, 'Include_B_stats')
         header_add = {'B_background_mean', 'B_mean', 'B_max', 'B_relative_mean', 'B_relative_max'};
         header = horzcat(header, header_add);
     end
 
-    if setting_extractor(settings, 'Include_region_stats')
+    if setting_get(settings, 'Include_region_stats')
         header_add = {
-            'MSH_posterior', 'SW_posterior', 'MSP_posterior', ...
-            'MSH_mahaldist', 'SW_mahaldist', 'MSP_mahaldist', ...
+            'MSP_posterior', 'SW_posterior', 'MSH_posterior', 'FS_posterior', ...
+            'MSH_mahaldist', 'SW_mahaldist', 'MSP_mahaldist', 'FS_posterior', ...
             'logpdf'
         };
         header = horzcat(header, header_add);
 
-        windows = setting_extractor(settings, 'Region_time_windows');
+        windows = setting_get(settings, 'Region_time_windows');
         if ~isempty(windows)
             str_windows = split(num2str(windows))';
             for w = str_windows
                 for t = {'posterior', 'mahaldist'}
-                    for r = {'MSH', 'SW', 'MSP'}
+                    for r = {'MSP', 'SW', 'MSH', 'FS'}
                         header = horzcat(header, {[r{:} '_' t{:} '_' w{:} 'sec_mean']}); %#ok<AGROW>
                     end
                 end

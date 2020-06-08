@@ -4,11 +4,13 @@ classdef SLAMS_finder < handle
     
     properties
         region_classifier
+        n_classes
         ts
         last_run_results
-        model_region
+        % model_region
         tint_load
         tint
+        sc
     end
     
     methods
@@ -18,15 +20,17 @@ classdef SLAMS_finder < handle
 
             p = inputParser;
             addParameter(p, 'Show_train_progress', false)
+            addParameter(p, 'Spacecraft', 'MMS1')
             parse(p, varargin{:})
             r = p.Results;
 
             obj.ts = struct;
             obj.last_run_results = struct;
             obj.region_train(r.Show_train_progress);
+            obj.sc = lower(r.Spacecraft);
         end
 
-        function data = create_region_data(~, E_ion_bin_center, E_ion_bin_delta, E_ion_omni, pos, v_ion)
+        function data = create_region_data(~, E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion)
             E_bins_center = log(E_ion_bin_center);
             % E_bins_center = 1:32;
             E_per_bin = E_ion_omni.*E_ion_bin_delta;
@@ -62,8 +66,8 @@ classdef SLAMS_finder < handle
             E_ion_bin_delta = X5(:,2:33);
             E_ion_omni = X4(:,5:36);
             v_ion = X4(:,2:4);
-            pos = X4(:,69:71);
-            X = obj.create_region_data(E_ion_bin_center, E_ion_bin_delta, E_ion_omni, pos, v_ion);
+            % pos = X4(:,69:71);
+            X = obj.create_region_data(E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion);
             [n, ~] = size(X);
 
             % Normalize data
@@ -120,13 +124,14 @@ classdef SLAMS_finder < handle
             
             % % merge_map = {[2, 6], 3, [5, 1], 4};
             % merge_map = {[1, 3], [2, 4], [5, 7], [6, 8], [9, 10]};
-            merge_map = {[3, 8, 9], [5, 7], [1, 4], [2, 6, 10]};
+            merge_map = {[8, 9], [5, 7], [1, 4], [2, 6, 10], 3};
             % % merge_map = {[2, 3], 5, 1, 6, 4, 7};
             y = merge_clusters(y, merge_map);
-            % outlier = ismember(y, [-1]);
+            % outlier = ismember(y, [5]);
             % X_no = X(~outlier, :);
             % y = y(~outlier);
-            n_clust = length(unique(y));
+            n_clust = length(unique(y)) - 1;
+            obj.n_classes = n_clust;
 
             if plot_progress % && false
                 plot_points(X, 'Merged clusters', y)
@@ -154,6 +159,7 @@ classdef SLAMS_finder < handle
             % p
 
             % Create GMM of remaining clusters.
+            % p(4) = p(4)*0.5
             model = gmdistribution(mu, sig, p);
             % model.ComponentProportion
             % options = statset('Display', 'final', 'MaxIter', 1500, 'TolFun', 1e-3);
@@ -197,7 +203,7 @@ classdef SLAMS_finder < handle
             % end
 
             obj.region_classifier = @classifierFunction;
-            obj.model_region = model;
+            % obj.model_region = model;
 
             y = obj.region_classifier(X);
 
@@ -301,13 +307,13 @@ classdef SLAMS_finder < handle
         end
 
         function [probs, mahaldist, logpdf] = region_classify(obj, r)
-            obj.load_ts({'E_ion_center', 'E_ion_delta', 'E_ion_omni', 'pos', 'v_ion'});
+            obj.load_ts({'E_ion_center', 'E_ion_delta', 'E_ion_omni', 'v_ion'});
 
             t = obj.ts.E_ion_omni.time;
-            pos = obj.ts.pos.resample(obj.ts.E_ion_omni);
+            % pos = obj.ts.pos.resample(obj.ts.E_ion_omni);
 
             % X = obj.create_region_data(obj.ts.E_ion_center.data, obj.ts.E_ion_omni.data, pos.data);
-            X = obj.create_region_data(obj.ts.E_ion_center.data, obj.ts.E_ion_delta.data, obj.ts.E_ion_omni.data, pos.data, obj.ts.v_ion.data);
+            X = obj.create_region_data(obj.ts.E_ion_center.data, obj.ts.E_ion_delta.data, obj.ts.E_ion_omni.data, obj.ts.v_ion.data);
             % size(X)
 
             [y, probs, mahaldist, logpdf] = obj.region_classifier(X);
@@ -327,7 +333,7 @@ classdef SLAMS_finder < handle
 
             ts_label = TSeries(t, y);
             % ts_label = moving_window_func(ts_label, 60, @(x) majorityVote(x.data), t);
-            tints_cell_region = labels2tints(ts_label, 1:5);
+            tints_cell_region = labels2tints(ts_label, 1:obj.n_classes);
             obj.last_run_results.tints_cell_region = tints_cell_region;
             % tints_SW = tints_cell_region{2};
             % % tints_SW = remove_short_tints(tints_SW, 60);
@@ -335,7 +341,7 @@ classdef SLAMS_finder < handle
 
             obj.last_run_results.region_plotter = @plotter;
             function plotter(plt)
-                plt.lineplot('class_probs', probs, 'ylabel', 'Posterior', 'legend', {'MSP', 'SW', 'MSH', 'x1', 'x2'}, 'colorOrder', [1 0 0; 0 0.8 0; 0 0 1; 0 1 1; 1 0 1])
+                plt.lineplot('class_probs', probs, 'ylabel', 'Posterior', 'legend', {'MSP', 'SW', 'MSH', 'FS'}, 'colorOrder', [1 0 0; 0 0.7 0; 0 0 1; 0 0.7 0.7])
             end
 
             function v = majorityVote(x)
@@ -343,7 +349,7 @@ classdef SLAMS_finder < handle
             end
         end
         
-        function [SLAMS, logic_SLAMS] = SLAMS_find(obj, r)
+        function SLAMS = SLAMS_find(obj, r)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             obj.load_ts({'b', 'b_abs'})
@@ -371,18 +377,15 @@ classdef SLAMS_finder < handle
             tints_cell_NOTSLAMS_SLAMS = labels2tints(SLAMS_label, [0,1]);
             tints_SLAMS = tints_cell_NOTSLAMS_SLAMS{2};
             tints_SLAMS = remove_edge_SLAMS(tints_SLAMS, obj.tint);
+            tints_SLAMS = remove_short_tints(tints_SLAMS, r.SLAMS_min_duration);
             obj.last_run_results.tints_SLAMS = tints_SLAMS;
             if ~isempty(tints_SLAMS)
-                logic_SLAMS(t < tints_SLAMS(1) | t > tints_SLAMS(end)) = 0;
-
                 n_SLAMS = length(tints_SLAMS)/2;
                 vec = repelem(1, n_SLAMS);
                 starts = mat2cell(tints_SLAMS(1:2:end), vec, 1);
                 stops = mat2cell(tints_SLAMS(2:2:end), vec, 1);
                 SLAMS = struct('start', starts, 'stop', stops);
             else
-                logic_SLAMS(:) = 0;
-
                 SLAMS = [];
             end
 
@@ -399,28 +402,21 @@ classdef SLAMS_finder < handle
                 plt.lineplot(name, b_upper_thresh, 'color', 'r', arg{:});
             end
 
-            function logic_above = merge_SLAMS(logic_above, logic_under)
+            function logic_SLAMS = merge_SLAMS(logic_above, logic_under)
                 if all(logic_above == 0)
+                    logic_SLAMS = logic_above;
                     return
                 end
-                logic_above = logic_above';
-                logic_under = logic_under';
-            
-                index_above = find(logic_above);
-                index_under = find(logic_under);
-                l = length(index_under);
-                tmp = index_under' > index_above;
-                tmp = diff(tmp, 1);
-                tmp = mod(find(tmp), l - 1);
-                tmp(tmp == 0) = l - 1;
-                tmp = unique(tmp);
-                tmp = sort([tmp; tmp + 1]);
-                tmp = [1; tmp; l];
-                tmp = index_under(tmp);
-                for i = 1:2:length(tmp)
-                    logic_under(tmp(i):tmp(i+1)) = 1;
+                index_pair_not_under = sort([find(logical_manip(logic_under, 'firstOfZero')); find(logical_manip(logic_under, 'lastOfZero'))]);
+                index_above = find(logical_manip(logic_above, 'firstOfOne'));
+                for i = 1:2:length(index_pair_not_under)
+                    start_idx = index_pair_not_under(i);
+                    stop_idx = index_pair_not_under(i + 1);
+                    if all(~((start_idx <= index_above) & (stop_idx >= index_above)))
+                        logic_under(start_idx:stop_idx) = true;
+                    end
                 end
-                logic_above = ~logic_under';
+                logic_SLAMS = ~logic_under;
             end
 
             function tints_SLAMS = remove_edge_SLAMS(tints_SLAMS, tint_allowed)
@@ -443,15 +439,15 @@ classdef SLAMS_finder < handle
         function plot_comparison(obj, tint, tints_true_SLAMS)
             obj.load_ts({'b', 'b_abs', 'v_ion', 'v_ion_abs', 'n_ion', 'E_ion_omni', 'E_ion_center', 'E_ion_delta', 'pos'})
 
-            plt = modular_plot('title', 'Predicted vs true');
+            plt = modular_plot('title', [upper(obj.sc), ', automatic vs manual SLAMS identification']);
             if isfield(obj.last_run_results, 'region_plotter')
                 obj.last_run_results.region_plotter(plt);
             end
             plt.lineplot('B_pred', obj.ts.b_abs);
             if isfield(obj.last_run_results, 'SLAMS_plotter')
-                obj.last_run_results.SLAMS_plotter(plt, 'B_pred', {'ylabel', 'Pred'})
+                obj.last_run_results.SLAMS_plotter(plt, 'B_pred', {'ylabel', 'Automatic'})
             end
-            plt.lineplot('B_true', obj.ts.b_abs, 'ylabel', 'True');
+            plt.lineplot('B_true', obj.ts.b_abs, 'ylabel', 'Manual');
             plt.lineplot('B', {obj.ts.b, obj.ts.b_abs}, 'ylabel', 'B_{GSE} (nT)');
             plt.lineplot('n_ion', obj.ts.n_ion, 'ylabel', 'n_i (cm^{-3})')
             % plt.lineplot('T_ion', {T_ion_para, T_ion_perp}, 'ylabel', 'T_{i} (eV)', 'legend', {'T_{ipara}','T_{iperp}'})
@@ -470,7 +466,7 @@ classdef SLAMS_finder < handle
         function plot_prediction(obj, tint)
             obj.load_ts({'b', 'b_abs', 'v_ion', 'v_ion_abs', 'n_ion', 'E_ion_omni', 'E_ion_center', 'pos'})
 
-            plt = modular_plot('title', 'Predicted SLAMS');
+            plt = modular_plot('title', [upper(obj.sc), ', Predicted SLAMS']);
             if isfield(obj.last_run_results, 'region_plotter')
                 obj.last_run_results.region_plotter(plt);
             end
@@ -524,17 +520,18 @@ classdef SLAMS_finder < handle
             addParameter(p, 'SLAMS_B_bg_method', 'median')
             addParameter(p, 'SLAMS_B_bg_window', 60)
             addParameter(p, 'SLAMS_threshold', 2)
+            addParameter(p, 'SLAMS_min_duration', 0)
             parse(p, tint, varargin{:})
             r = p.Results;
 
             obj.newRun(r.tint, r.Extra_load_time)
 
-            [SLAMS, logic_SLAMS] = obj.SLAMS_find(r);
+            SLAMS = obj.SLAMS_find(r);
             if r.Include_region_stats
                 [probs, mahaldist, logpdf] = obj.region_classify(r);
             end
             
-            if ~isempty(SLAMS) && false
+            if ~isempty(SLAMS)
                 n_SLAMS = length(SLAMS);
 
                 if r.Include_GSE_coords || r.Include_region_stats
@@ -553,8 +550,8 @@ classdef SLAMS_finder < handle
                     if r.Include_region_stats
                         t = probs.time.epoch;
                         [~, idx_closest] = min(abs(SLAMS_mid - t'), [], 2);
-                        probs_cell = mat2cell(probs.data(idx_closest, :), cell_converter_tool, 3);
-                        mahaldist_cell = mat2cell(mahaldist.data(idx_closest, :), cell_converter_tool, 3);
+                        probs_cell = mat2cell(probs.data(idx_closest, :), cell_converter_tool, obj.n_classes);
+                        mahaldist_cell = mat2cell(mahaldist.data(idx_closest, :), cell_converter_tool, obj.n_classes);
                         logpdf_cell = mat2cell(logpdf.data(idx_closest, :), cell_converter_tool, 1);
 
                         [SLAMS.region_posterior] = probs_cell{:};
@@ -573,12 +570,12 @@ classdef SLAMS_finder < handle
                             logical_inside_window = logical_after_start & logical_before_stop;
 
                             n_inside_window = sum(logical_inside_window, 3);
-                            probs3d = mean3d(probs.data, n_inside_window);
-                            mahaldist3d = mean3d(mahaldist.data, n_inside_window);
-                            logpdf3d = log(permute(sum(logical_inside_window.*reshape(exp(logpdf.data), 1, 1, []), 3)./n_inside_window, [2, 3, 1]));
+                            probs3d = mean3d(probs.data, logical_inside_window, n_inside_window);
+                            mahaldist3d = mean3d(mahaldist.data, logical_inside_window, n_inside_window);
+                            logpdf3d = log(mean3d(exp(logpdf.data), logical_inside_window, n_inside_window));
 
-                            probs3d_cell = mat2cell(probs3d, n_windows, 3, cell_converter_tool);
-                            mahaldist3d_cell = mat2cell(mahaldist3d, n_windows, 3, cell_converter_tool);
+                            probs3d_cell = mat2cell(probs3d, n_windows, obj.n_classes, cell_converter_tool);
+                            mahaldist3d_cell = mat2cell(mahaldist3d, n_windows, obj.n_classes, cell_converter_tool);
                             logpdf3d_cell = mat2cell(logpdf3d, n_windows, 1, cell_converter_tool);
                             
                             [SLAMS.region_posterior_windows] = probs3d_cell{:};
@@ -589,11 +586,12 @@ classdef SLAMS_finder < handle
                 end
                 
                 if r.Include_B_stats
-                    idx_first_last = sort([find(logical_manip(logic_SLAMS', 'firstOfOne')), find(logical_manip(logic_SLAMS', 'lastOfOne'))]);
+                    % idx_first_last = sort([find(logical_manip(logic_SLAMS', 'firstOfOne')), find(logical_manip(logic_SLAMS', 'lastOfOne'))]);
+                    t = obj.ts.b_abs.time.epoch;
                     for j = 1:n_SLAMS
-                        idx_range = idx_first_last(j*2 - 1):idx_first_last(j*2);
-                        B_abs = obj.ts.b_abs.data(idx_range);
-                        B_bg = obj.ts.b_bg.data(idx_range);
+                        logical_idx = (SLAMS(j).start.epoch <= t) & (SLAMS(j).stop.epoch >= t);
+                        B_abs = obj.ts.b_abs.data(logical_idx);
+                        B_bg = obj.ts.b_bg.data(logical_idx);
                         SLAMS(j).B_bg_mean = mean(B_bg);
                         SLAMS(j).B_mean = mean(B_abs);
                         SLAMS(j).B_max = max(B_abs);
@@ -609,14 +607,14 @@ classdef SLAMS_finder < handle
 
             % tints_SLAMS = intersect_tints(tints_SLAMS, r.tint);
             % tints_SLAMS = remove_empty_tints(tints_SLAMS);
-            function out = mean3d(inp, n_inside_window)
-                a = reshape(inp(:,1), 1, 1, []);
-                b = reshape(inp(:,2), 1, 1, []);
-                c = reshape(inp(:,3), 1, 1, []);
-                a = sum(logical_inside_window.*a, 3);
-                b = sum(logical_inside_window.*b, 3);
-                c = sum(logical_inside_window.*c, 3);
-                out = cat(3, a, b, c)./n_inside_window;
+            function out = mean3d(inp, logical_inside_window, n_inside_window)
+                [~, n] = size(inp);
+                c = cell(1, n);
+                for i = 1:n
+                    tmp = permute(inp(:, i), [3, 2, 1]);
+                    c{i} = sum(logical_inside_window.*tmp, 3);
+                end
+                out = cat(3, c{:})./n_inside_window;
                 out = permute(out, [2, 3, 1]);
             end
         end
@@ -626,7 +624,7 @@ classdef SLAMS_finder < handle
                 switch cell_string{i}
                 case 'b'
                     if ~isfield(obj.ts, 'b')
-                        obj.ts.b = load_tints_MMS('mms1_fgm_srvy_l2', 'mms1_fgm_b_gse_srvy_l2', obj.tint_load);
+                        obj.ts.b = load_tints_MMS([obj.sc, '_fgm_srvy_l2'], [obj.sc, '_fgm_b_gse_srvy_l2'], obj.tint_load);
                     end
                 case 'b_abs'
                     if ~isfield(obj.ts, 'b_abs')
@@ -634,7 +632,7 @@ classdef SLAMS_finder < handle
                     end
                 case 'v_ion'
                     if ~isfield(obj.ts, 'v_ion')
-                        obj.ts.v_ion = load_tints_MMS('mms1_fpi_fast_l2_dis-moms', 'mms1_dis_bulkv_gse_fast', obj.tint_load);
+                        obj.ts.v_ion = load_tints_MMS([obj.sc, '_fpi_fast_l2_dis-moms'], [obj.sc, '_dis_bulkv_gse_fast'], obj.tint_load);
                     end
                 case 'v_ion_abs'
                     if ~isfield(obj.ts, 'v_ion_abs')
@@ -642,23 +640,23 @@ classdef SLAMS_finder < handle
                     end
                 case 'n_ion'
                     if ~isfield(obj.ts, 'n_ion')
-                        obj.ts.n_ion = load_tints_MMS('mms1_fpi_fast_l2_dis-moms', 'mms1_dis_numberdensity_fast', obj.tint_load);
+                        obj.ts.n_ion = load_tints_MMS([obj.sc, '_fpi_fast_l2_dis-moms'], [obj.sc, '_dis_numberdensity_fast'], obj.tint_load);
                     end
                 case 'E_ion_omni'
                     if ~isfield(obj.ts, 'E_ion_omni')
-                        obj.ts.E_ion_omni = load_tints_MMS('mms1_fpi_fast_l2_dis-moms', 'mms1_dis_energyspectr_omni_fast', obj.tint_load);
+                        obj.ts.E_ion_omni = load_tints_MMS([obj.sc, '_fpi_fast_l2_dis-moms'], [obj.sc, '_dis_energyspectr_omni_fast'], obj.tint_load);
                     end
                 case 'E_ion_center'
                     if ~isfield(obj.ts, 'E_ion_center')
-                        obj.ts.E_ion_center = load_tints_MMS('mms1_fpi_fast_l2_dis-moms', 'mms1_dis_energy_fast', obj.tint_load);
+                        obj.ts.E_ion_center = load_tints_MMS([obj.sc, '_fpi_fast_l2_dis-moms'], [obj.sc, '_dis_energy_fast'], obj.tint_load);
                     end
                 case 'E_ion_delta'
                     if ~isfield(obj.ts, 'E_ion_delta')
-                        obj.ts.E_ion_delta = load_tints_MMS('mms1_fpi_fast_l2_dis-moms', 'mms1_dis_energy_delta_fast', obj.tint_load);
+                        obj.ts.E_ion_delta = load_tints_MMS([obj.sc, '_fpi_fast_l2_dis-moms'], [obj.sc, '_dis_energy_delta_fast'], obj.tint_load);
                     end
                 case 'pos'
                     if ~isfield(obj.ts, 'pos')
-                        obj.ts.pos = load_tints_MMS('mms1_mec_srvy_l2_ephts04d', 'mms1_mec_r_gse', obj.tint_load);
+                        obj.ts.pos = load_tints_MMS([obj.sc, '_mec_srvy_l2_ephts04d'], [obj.sc, '_mec_r_gse'], obj.tint_load);
                     end
                 otherwise
                     error(['''' cell_string{i} ''' loader not implemented.'])
