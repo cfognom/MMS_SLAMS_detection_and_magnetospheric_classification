@@ -5,7 +5,7 @@ sc = 'MMS1';
 
 plot_comparison = true;
 
-show_train_progress = false;
+show_region_classifier_steps = false;
 
 save_file_name = 'validation_results.txt';
 
@@ -20,11 +20,11 @@ settings = {
     'SLAMS_min_duration', 0
 };
 
-main(sc, settings, save_file_name, plot_comparison, show_train_progress);
+main(sc, settings, save_file_name, plot_comparison, show_region_classifier_steps);
 
-function main(sc, settings, save_file_name, plot_comparison, show_train_progress)
+function main(sc, settings, save_file_name, plot_comparison, show_region_classifier_steps)
 
-    finder = SLAMS_finder('Spacecraft', sc, 'Show_train_progress', show_train_progress);
+    finder = SLAMS_finder('Spacecraft', sc, 'Show_region_classifier_steps', show_region_classifier_steps);
     
     labeled_files = dir('labeled/data/*.txt');
     rng(100);

@@ -21,7 +21,7 @@ settings = {
 main(sc, tints_search, settings, save_file_name, plot_prediction);
 
 function main(sc, tints_search, settings, save_file_name, plot_prediction)
-    finder = SLAMS_finder('Spacecraft', sc, 'Show_train_progress', false);
+    finder = SLAMS_finder('Spacecraft', sc, 'Show_region_classifier_steps', false);
     
     tints_active = get_tints_active(tints_search);
     
