@@ -1,43 +1,54 @@
-force_load_ri = [];
-% force_load_ri = [];
-dt_view = 30; % Extra time in seconds before and after to view.
-dt_load = 60*20; % Extra time in seconds before and after to load.
+% A program to manually mark SLAMS in validation data using mouse.
+% Validation data consists of short time intervals which was marked as containing SLAMS by scientists on the MMS website.
 
-[tints, descs] = read_events('events/slams_burst.csv');
-n_tints = length(tints)/2;
+% Force load specific IDs by adding them to the array or leave empty to load next time interval.
+force_load_ID = [];
 
-if isempty(force_load_ri)
-    rng(100)
-    random_order = randi(n_tints, n_tints, 1);
-    ris = random_order;
-else
-    ris = force_load_ri;
-end
+% Extra time in seconds before and after to view.
+dt_view = 30;
 
-n_ris = length(ris);
-for i = 1:n_ris
-    ri = ris(i);
-    tint = select_tint(tints, ri);
-    desc = descs{ri};
-    file_name_data = ['labeled/data/', sprintf('%u_%u_%u', ri, tint(1).epoch, tint(2).epoch)];
-    file_name_plot = ['labeled/plot/', sprintf('%u_%u_%u', ri, tint(1).epoch, tint(2).epoch)];
-    try
-        pre_marked = readmatrix(file_name_data);
-        existing_file = true;
-    catch
-        pre_marked = [];
-        existing_file = false;
+% Extra time in seconds before and after to load.
+dt_load = 60*20;
+
+main(force_load_ID, dt_view, dt_load);
+
+function main(force_load_ri, dt_view, dt_load)
+    [tints, descs] = read_events('events/slams_burst.csv');
+    n_tints = length(tints)/2;
+    
+    if isempty(force_load_ri)
+        rng(100)
+        random_order = randi(n_tints, n_tints, 1);
+        ris = random_order;
+    else
+        ris = force_load_ri;
     end
-    if existing_file && isempty(force_load_ri) % File exists but it should not be forced loaded
-        fprintf('Time interval with i = %u and ri = %u already done.\n', i, ri);
-        continue;
-    end
-    try
-        if ~mark_ri(tint, desc, ri, file_name_data, file_name_plot, dt_view, dt_load, existing_file, pre_marked)
-            continue
+    
+    n_ris = length(ris);
+    for i = 1:n_ris
+        ri = ris(i);
+        tint = select_tint(tints, ri);
+        desc = descs{ri};
+        file_name_data = ['labeled/data/', sprintf('%u_%u_%u', ri, tint(1).epoch, tint(2).epoch)];
+        file_name_plot = ['labeled/plot/', sprintf('%u_%u_%u', ri, tint(1).epoch, tint(2).epoch)];
+        try
+            pre_marked = readmatrix(file_name_data);
+            existing_file = true;
+        catch
+            pre_marked = [];
+            existing_file = false;
         end
-    catch
-        break;
+        if existing_file && isempty(force_load_ri) % File exists but it should not be forced loaded
+            fprintf('Time interval with i = %u and ri = %u already done.\n', i, ri);
+            continue;
+        end
+        try
+            if ~mark_ri(tint, desc, ri, file_name_data, file_name_plot, dt_view, dt_load, existing_file, pre_marked)
+                continue
+            end
+        catch
+            break;
+        end
     end
 end
 
@@ -62,10 +73,6 @@ function flag = mark_ri(tint, desc, ri, file_name_data, file_name_plot, dt_view,
     E_ion_spectr = load_tints_MMS(ion_fpi_filePrefix, 'mms1_dis_energyspectr_omni_fast', tint_load);
     E_ion = load_tints_MMS(ion_fpi_filePrefix, 'mms1_dis_energy_fast', tint_load);
     
-    % Load ele-fpi
-    ele_fpi_filePrefix = 'mms1_fpi_fast_l2_des-moms';
-    n_ele = load_tints_MMS(ele_fpi_filePrefix, 'mms1_des_numberdensity_fast', tint_load);
-    
     % Load mec
     mec_filePrefix = 'mms1_mec_srvy_l2_ephts04d';
     pos = load_tints_MMS(mec_filePrefix, 'mms1_mec_r_gse', tint_load)/6378;
@@ -79,12 +86,11 @@ function flag = mark_ri(tint, desc, ri, file_name_data, file_name_plot, dt_view,
     plot_title = sprintf('MMS1, timespan = %s', t_span);
     plt = modular_plot('title', plot_title);
     plt.lineplot('B', {b, b_abs}, 'ylabel', 'B_{GSE} (nT)');
-    plt.lineplot('n', {n_ion, n_ele}, 'ylabel', 'n_i (cm^{-3})')
+    plt.lineplot('n', n_ion, 'ylabel', 'n_i (cm^{-3})')
     plt.lineplot('T_ion', {T_ion_para, T_ion_perp}, 'ylabel', 'T_{i} (eV)', 'legend', {'T_{ipara}','T_{iperp}'})
     plt.spectrogram('E_ion_spectr', {E_ion_spectr, E_ion}, 'ylabel', 'W_i (eV)')
     plt.lineplot('v_ion', {v_ion, v_ion_abs}, 'ylabel', 'v_{i} (kms^{-1})', 'legend', {'v_{ix}','v_{iy}','v_{iz}'})
     plt.lineplot('pos', pos, 'ylabel', 'R_{GSE} (R_E)', 'legend', {'x','y','z'})
-    % plt.lineplot('class_score', score_TS, 'ylabel', 'Score', 'legend', {'Msphere', 'SW','Msheath'}, 'colorOrder', [1 0 0; 0 0.5 0; 0 0 1])
     plt.show(tint_view);
     plt.mark(tint, 'target', 'B', 'color', 'b');
     fprintf('Info:\n\tri = %u\n', ri);
