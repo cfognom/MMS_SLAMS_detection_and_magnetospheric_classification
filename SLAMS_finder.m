@@ -5,7 +5,9 @@ classdef SLAMS_finder < handle
     
     properties
         region_classifier
+        classes
         n_classes
+        priors
         ts
         last_run_results
         tint_load
@@ -41,13 +43,14 @@ classdef SLAMS_finder < handle
 
         function region_train(obj, plot_progress)
             disp('Training region classifier...')
-            X4 = readmatrix(['cache/', 'traindata4.txt']);
-            X5 = readmatrix(['cache/', 'traindata5.txt']);
+            % X4 = readmatrix(['cache/', 'traindata4.txt']);
+            % X5 = readmatrix(['cache/', 'traindata5.txt']);
+            X = readmatrix(['cache/', 'randSampData.txt']);
 
-            E_ion_bin_center = X4(:,37:68);
-            E_ion_bin_delta = X5(:,2:33);
-            E_ion_omni = X4(:,5:36);
-            v_ion = X4(:,2:4);
+            v_ion = X(:,2:4);
+            E_ion_omni = X(:,5:36);
+            E_ion_bin_delta = X(:,37:68);
+            E_ion_bin_center = X(:,69:100);
             X = obj.create_region_data(E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion);
             [n, ~] = size(X);
 
@@ -61,10 +64,10 @@ classdef SLAMS_finder < handle
             X_norm = (X - m)./s;
 
             % Hierarchical clustering
-            tree = linkage(X_norm, 'average', 'euclidean');
+            tree = linkage(X_norm, 'ward', 'euclidean');
 
             % Lowest number of clusters that separates MSP, SW, MSH and FS
-            n_clust = 10;
+            n_clust = 9;
             y = cluster(tree, 'MaxClust', n_clust);
             
             if plot_progress
@@ -72,16 +75,17 @@ classdef SLAMS_finder < handle
             end
             
             % Merge clusters which belong to same class
-            merge_map = {[8, 9], [5, 7], [1, 4], [2, 6, 10], 3};
+            merge_map = {[2, 8], 9, [3, 4, 5, 6], [7, 8], 1};
             y = merge_clusters(y, merge_map);
-
+            
             if plot_progress
                 plot_points(X, 'Merged clusters', y)
             end
 
-            % Cluster 5 is discarded for a better fit (-1)
+            % Discard last cluster
             n_clust = length(unique(y)) - 1;
             obj.n_classes = n_clust;
+            obj.classes = {'MSP', 'SW', 'MSH', 'FS'};
 
             % Get mu, sigma and p of each cluster
             mu = zeros(n_clust, 3);
@@ -98,6 +102,7 @@ classdef SLAMS_finder < handle
 
             % Create GMM of each cluster
             model = gmdistribution(mu, sig, p);
+            obj.priors = model.ComponentProportion;
 
             % Classify data using GMM model
             y = cluster(model, X);
@@ -196,7 +201,7 @@ classdef SLAMS_finder < handle
 
             obj.last_run_results.region_plotter = @plotter;
             function plotter(plt)
-                plt.lineplot('class_probs', probs, 'ylabel', 'Posterior', 'legend', {'MSP', 'SW', 'MSH', 'FS'}, 'colorOrder', [1 0 0; 0 0.7 0; 0 0 1; 0 0.7 0.7])
+                plt.lineplot('class_probs', probs, 'ylabel', 'Posterior', 'legend', obj.classes, 'colorOrder', [1 0 0; 0 0.7 0; 0 0 1; 0 0.7 0.7])
             end
 
             function v = majorityVote(x)
