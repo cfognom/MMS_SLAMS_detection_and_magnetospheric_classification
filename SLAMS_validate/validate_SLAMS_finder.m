@@ -1,7 +1,17 @@
+% Calculates precision, recall and F1 of automatically detected SLAMS
+% compared to manually detected SLAMS from SLAMS_marker.m
+
+sc = 'MMS1';
+
+plot_comparison = true;
+
+show_train_progress = false;
+
+save_file_name = 'validation_results.txt';
+
 settings = {
     'Include_B_stats', false, ...
-    'Include_region_stats', true, ...
-    'Region_time_windows', [15, 30, 60, 2*60, 4*60, 8*60], ...
+    'Include_region_stats', false, ...
     'Include_GSE_coords', false, ...
     'Extra_load_time', 30, ...
     'SLAMS_B_bg_method', 'median', ...
@@ -10,41 +20,45 @@ settings = {
     'SLAMS_min_duration', 0
 };
 
-finder = SLAMS_finder('Show_train_progress', true);
+main(sc, settings, save_file_name, plot_comparison, show_train_progress);
 
-labeled_files = dir('labeled/data/*.txt');
-rng(100);
-labeled_files = labeled_files(randperm(length(labeled_files)));
-% labeled_files = labeled_files(1:2);
+function main(sc, settings, save_file_name, plot_comparison, show_train_progress)
 
-all_results = [];
-run_count = 0;
-
-fileID = fopen('validation_results.txt', 'w');
-for bgmtd = ["median", "mean", "harmmean"]
-    settings = setting_set(settings, 'SLAMS_B_bg_method', char(bgmtd));
-    for bgtime = [30, 60, 2*60]
-        settings = setting_set(settings, 'SLAMS_B_bg_window', bgtime);
-        settings = setting_set(settings, 'Extra_load_time', bgtime/2);
-        for thresh = [2, 2.5]
-            settings = setting_set(settings, 'SLAMS_threshold', thresh);
-            for min_dur = [0, 1]
-                settings = setting_set(settings, 'SLAMS_min_duration', min_dur);
-                run_count = run_count + 1;
-                results = validate(finder, labeled_files, settings, 'Plot', true);
-                results.bgmtd = bgmtd;
-                results.bgtime = bgtime;
-                results.thresh = thresh;
-                results.min_dur = min_dur;
-                all_results = [all_results, results]; %#ok<AGROW>
-                print_run(fileID, run_count, settings, results)
+    finder = SLAMS_finder('Spacecraft', sc, 'Show_train_progress', show_train_progress);
+    
+    labeled_files = dir('labeled/data/*.txt');
+    rng(100);
+    labeled_files = labeled_files(randperm(length(labeled_files)));
+    
+    all_results = [];
+    run_count = 0;
+    
+    fileID = fopen(save_file_name, 'w');
+    for bgmtd = ["median", "mean", "harmmean"]
+        settings = setting_set(settings, 'SLAMS_B_bg_method', char(bgmtd));
+        for bgtime = [30, 60, 2*60]
+            settings = setting_set(settings, 'SLAMS_B_bg_window', bgtime);
+            settings = setting_set(settings, 'Extra_load_time', bgtime/2);
+            for thresh = [2, 2.5]
+                settings = setting_set(settings, 'SLAMS_threshold', thresh);
+                for min_dur = [0, 1]
+                    settings = setting_set(settings, 'SLAMS_min_duration', min_dur);
+                    run_count = run_count + 1;
+                    results = validate(finder, labeled_files, settings, 'Plot', plot_comparison);
+                    results.bgmtd = bgmtd;
+                    results.bgtime = bgtime;
+                    results.thresh = thresh;
+                    results.min_dur = min_dur;
+                    all_results = [all_results, results]; %#ok<AGROW>
+                    print_run(fileID, run_count, settings, results)
+                end
             end
         end
     end
+    fclose('all');
+    
+    plot_precision_recall(all_results)
 end
-fclose(fileID);
-
-plot_precision_recall(all_results)
 
 function results = validate(finder, labeled_files, settings, varargin)
 
@@ -127,11 +141,11 @@ function plot_precision_recall(results)
         end
 
         switch result.bgtime
-        case 60*3
-            marker_size = 10;
         case 60*2
-            marker_size = 8;
+            marker_size = 10;
         case 60
+            marker_size = 8;
+        case 30
             marker_size = 6;
         end
 
