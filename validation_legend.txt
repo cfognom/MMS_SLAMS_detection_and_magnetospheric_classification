@@ -10,3 +10,4 @@
 10: No removal of short SW, Removal of edge SLAMS for main tint, 1, 2, 3 min window, No region classifier, tested 0.25, 0.5 and 0.75 for merge_threshold
 11: Removal of 1, 2, 3 sec SLAMS, Removal of edge SLAMS for main tint, 1, 2, 3 min window, No region classifier
 12: Removal of 0, 1 sec SLAMS, Removal of edge SLAMS for main tint, 1, 2, 3 min window, No region classifier
+13: Removal of 0, 1 sec SLAMS, Removal of edge SLAMS for main tint, 0.5, 1, 2 min window, No region classifier

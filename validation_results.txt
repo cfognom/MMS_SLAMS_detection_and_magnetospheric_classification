@@ -1,0 +1,12 @@
+--- run 1 -----------------------------------------------Settings:
+	Include_B_stats = false
+	Include_region_stats = false
+	Include_GSE_coords = false
+	Extra_load_time = 15
+	SLAMS_B_bg_method = median
+	SLAMS_B_bg_window = 30
+	SLAMS_threshold = 2
+	SLAMS_min_duration = 0
+Precision = 0.648148148148148
+	Recall = 0.709401709401709
+	F1 = 0.677393027865221
