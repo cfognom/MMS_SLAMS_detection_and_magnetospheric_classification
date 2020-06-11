@@ -155,7 +155,7 @@ function [SLAMS, dataset_info] = load_SLAMS(file, varargin)
         starts = mat2cell(EpochTT(char(cel{:, 2})), cell_converter_tool, 1);
         stops = mat2cell(EpochTT(char(cel{:, 3})), cell_converter_tool, 1);
         ids = mat2cell(cel{:, 1}, cell_converter_tool, 1);
-        SLAMS = struct('id', ids, 'start', starts, 'stops', stops);
+        SLAMS = struct('id', ids, 'start', starts, 'stop', stops);
 
         if setting_get(dataset_info.finder_settings, 'Include_GSE_coords')
             col_idx = get_col_idx('x_GSE');
