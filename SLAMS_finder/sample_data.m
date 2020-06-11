@@ -9,12 +9,16 @@ function sample_data()
     rng(100)
     n = 10000;
     t_train = sample_tints(tints_active, n);
+    % starts = [SLAMS.start];
+    % stops = [SLAMS.stops];
+    % t_train = EpochTT(int64((starts.epoch + stops.epoch)/2));
     X_t = double(sort(t_train).epoch);
 
     % randSampData
     fpi_time_window = 4.5*4;
     mec_time_window = 2*30;
     save_path = 'cache/randSampData.txt';
+    % save_path = 'cache/SLAMSSampData.txt';
     check();
     X_v_ion = get_data_samples('mms1_fpi_fast_l2_dis-moms', 'mms1_dis_bulkv_gse_fast', t_train, fpi_time_window);
     X_E_ion_spectr = get_data_samples('mms1_fpi_fast_l2_dis-moms', 'mms1_dis_energyspectr_omni_fast', t_train, fpi_time_window);
