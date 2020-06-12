@@ -1,57 +1,11 @@
-function [SLAMS, dataset_info] = load_SLAMS(file, varargin)
+function [SLAMS, dataset_info] = load_SLAMS(file)
     %LOAD_SLAMS Reads SLAMS from file and returns SLAMS structs
-    % Can filter SLAMS using a the following name value pairs:
-    %   'ID', [Numeric array of ids]
-    %   'After_date', [UTC string]
-    %   'Before_date', [UTC string]
-    %   'Min_duration', [Numeric value in seconds]
-    %   'Max_duration', [Numeric value in seconds]
-    %   'GSE_filter', [Handle to a function with signature:
-    %       bool = myFunc(x_GSE, y_GSE, z_GSE).
-    %       If bool is true, SLAMS is included]
-    %   'B_filter', [Handle to a function with signature:
-    %       bool = myFunc(B_background_mean, B_mean, B_max, B_relative_mean, B_relative_max).
-    %       If bool is true, SLAMS is included]
-    %   'Region_filter', [Handle to a function with signature:
-    %       bool = myFunc(B_background_mean, B_mean, B_max, B_relative_mean, B_relative_max).
-    %       If bool is true, SLAMS is included]
-    
-    
-    % load_filter = {
-    %     'ID', []
-    %     'After_date', []
-    %     'Before_date', []
-    %     'Min_duration', []
-    %     'Max_duration', []
-    %     'GSE_filter', []
-    %     'B_filter', []
-    %     'Region_filter', []
-    % };
-
-    p = inputParser;
-    addRequired(p, 'file');
-    addParameter(p, 'ID', [])
-    addParameter(p, 'After_date', [])
-    addParameter(p, 'Before_date', [])
-    addParameter(p, 'Min_duration', [])
-    addParameter(p, 'Max_duration', [])
-    addParameter(p, 'GSE_filter', [])
-    addParameter(p, 'B_filter', [])
-    addParameter(p, 'Region_filter', [])
-    parse(p, file, varargin{:})
-    r = p.Results;
 
     fileID = fopen(file, 'r');
     
     dataset_info = read_info(fileID);
     
     SLAMS = read_SLAMS(fileID, dataset_info);
-    
-    % if isempty(r.ID)
-
-    % else
-
-    % end
 
     fclose('all');
 
@@ -190,10 +144,6 @@ function [SLAMS, dataset_info] = load_SLAMS(file, varargin)
             mahaldist = mat2cell([cel{:, col_range_mahaldist}], cell_converter_tool, n_classes);
             logpdf = mat2cell([cel{:, col_logpdf}], cell_converter_tool, 1);
 
-            [SLAMS.region_posterior] = posteriors{:};
-            [SLAMS.region_mahaldist] = mahaldist{:};
-            [SLAMS.region_logpdf] = logpdf{:};
-
             try
                 region_windows = setting_get(dataset_info.finder_settings, 'Region_time_windows');
             catch
@@ -216,6 +166,10 @@ function [SLAMS, dataset_info] = load_SLAMS(file, varargin)
                 [SLAMS.region_mahaldist_windows] = mahaldist_windows{:};
                 [SLAMS.region_logpdf_windows] = logpdf_windows{:};
             end
+
+            [SLAMS.region_posterior] = posteriors{:};
+            [SLAMS.region_mahaldist] = mahaldist{:};
+            [SLAMS.region_logpdf] = logpdf{:};
         end
 
         function col_idx = get_col_idx(col_name)
