@@ -21,9 +21,9 @@ function SLAMS = filter_SLAMS(SLAMS, varargin)
     %       region_posterior and region_mahaldist is [n_SLAMS x n_classes x (1 + n_windows)] matrices.
     %       The first dimension is for each SLAMS entry, the second is for each region class and
     %       the third is for the instant values (first index) and the mean values of the region time windows (second to end indices).
-    %       region_logpdf is a [n_SLAMS x (1 + n_windows)] matrix of the log of the probability density function.
+    %       region_logpdf is a [n_SLAMS x 1 x (1 + n_windows)] matrix of the log of the probability density function.
     %       The first dimension separates the data for each SLAMS and
-    %       the second for separates instant values (first index) and mean values over the region time windows (second to end indices).
+    %       the third separates instant values (first index) and mean values over the region time windows (second to end indices).
     %       If bool is true, SLAMS is included]
 
     p = inputParser;
@@ -84,19 +84,9 @@ function SLAMS = filter_SLAMS(SLAMS, varargin)
     end
 
     if ~isempty(r.Region_filter)
-        posteriors = vertcat(SLAMS.region_posterior);
-        posterior_windows = cat(3, SLAMS.region_posterior_windows);
-        posterior_windows = permute(posterior_windows, [3, 2, 1]);
-        posteriors = cat(3, posteriors, posterior_windows);
-
-        mahaldists = vertcat(SLAMS.region_mahaldist);
-        mahaldist_windows = cat(3, SLAMS.region_mahaldist_windows);
-        mahaldist_windows = permute(mahaldist_windows, [3, 2, 1]);
-        mahaldists = cat(3, mahaldists, mahaldist_windows);
-
-        logpdfs = vertcat(SLAMS.region_logpdf);
-        logpdf_windows = [SLAMS.region_logpdf_windows]';
-        logpdfs = [logpdfs, logpdf_windows];
+        posteriors = permute(cat(3, SLAMS.region_posterior), [3, 2, 1]);
+        mahaldists = permute(cat(3, SLAMS.region_mahaldist), [3, 2, 1]);
+        logpdfs = permute(cat(3, SLAMS.region_logpdf), [3, 2, 1]);
 
         idx = r.Region_filter(posteriors, mahaldists, logpdfs);
         % size(find(idx))
