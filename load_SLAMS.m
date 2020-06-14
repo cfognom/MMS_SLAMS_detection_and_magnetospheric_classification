@@ -1,34 +1,44 @@
-function [SLAMS, dataset_info] = load_SLAMS(file)
+function [SLAMS, database_info] = load_SLAMS(database_name)
     %LOAD_SLAMS Reads SLAMS from file and returns SLAMS structs
 
-    fileID = fopen(file, 'r');
     
-    dataset_info = read_info(fileID);
-    
-    SLAMS = read_SLAMS(fileID, dataset_info);
+    SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database';
+
+    dir_path = [SLAMS_db_path, '\', database_name];
+
+    database_info = read_info(dir_path);
+
+    SLAMS = read_SLAMS(dir_path, database_info);
+
+    if isfile([dir_path, '\search_durations.txt'])
+        database_info.search_durations = read_search_durations(dir_path, database_info);
+    end
 
     fclose('all');
 
-    function dataset_info = read_info(fileID)
+    function database_info = read_info(dir_path)
+        file_info = fopen([dir_path, '\database_info.txt'], 'r');
         while true
-            l = fgetl(fileID);
+            l = fgetl(file_info);
+            if l == -1
+                break;
+            end
 
             switch l
                 case 'Spacecraft:'
-                    dataset_info.spacecraft = strtrim(fgetl(fileID));
+                    database_info.spacecraft = strtrim(fgetl(file_info));
                 case 'Time intervals searched:'
-                    dataset_info.search_intervals = read_search_intervals(fileID);
+                    database_info.search_intervals = read_search_intervals(file_info);
                 case 'SLAMS finder settings:'
-                    dataset_info.finder_settings = read_finder_settings(fileID);
+                    database_info.finder_settings = read_finder_settings(file_info);
                 case 'Region class priors:'
-                    [classes, priors] = read_class_priors(fileID);
-                    dataset_info.region_classes = classes;
-                    dataset_info.region_class_priors = priors;
-                    dataset_info.n_region_classes = length(classes);
-                case 'Identified SLAMS:'
-                    return;
+                    [classes, priors] = read_class_priors(file_info);
+                    database_info.region_classes = classes;
+                    database_info.region_class_priors = priors;
+                    database_info.n_region_classes = length(classes);
             end
         end
+        fclose(file_info);
 
         function lines = read_indent(fileID)
             lines = {};
@@ -71,25 +81,26 @@ function [SLAMS, dataset_info] = load_SLAMS(file)
         end
     end
 
-    function SLAMS = read_SLAMS(fileID, dataset_info)
-        header = fgetl(fileID);
+    function SLAMS = read_SLAMS(dir_path, database_info)
+        file_SLAMS = fopen([dir_path, '\SLAMS.csv'], 'r');
+        header = fgetl(file_SLAMS);
 
         formatSpec = '%d %s %s';
 
-        if setting_get(dataset_info.finder_settings, 'Include_GSE_coords')
+        if setting_get(database_info.finder_settings, 'Include_GSE_coords')
             formatSpec = [formatSpec, ' %f %f %f'];
         end
 
-        if setting_get(dataset_info.finder_settings, 'Include_B_stats')
+        if setting_get(database_info.finder_settings, 'Include_B_stats')
             formatSpec = [formatSpec, ' %f %f %f %f %f'];
         end
 
-        if setting_get(dataset_info.finder_settings, 'Include_region_stats')
-            n_cols = 2*dataset_info.n_region_classes + 1;
+        if setting_get(database_info.finder_settings, 'Include_region_stats')
+            n_cols = 2*database_info.n_region_classes + 1;
             formatSpec = [formatSpec, repmat(' %f', [1, n_cols])];
 
             try
-                region_windows = setting_get(dataset_info.finder_settings, 'Region_time_windows');
+                region_windows = setting_get(database_info.finder_settings, 'Region_time_windows');
             catch
                 region_windows = [];
             end
@@ -101,7 +112,7 @@ function [SLAMS, dataset_info] = load_SLAMS(file)
             end
         end
 
-        cel = textscan(fileID, formatSpec, 'Delimiter', ',', 'MultipleDelimsAsOne', true);
+        cel = textscan(file_SLAMS, formatSpec, 'Delimiter', ',', 'MultipleDelimsAsOne', true);
 
         n_SLAMS = length(cel{:, 1});
         cell_converter_tool = repelem(1, n_SLAMS);
@@ -111,14 +122,14 @@ function [SLAMS, dataset_info] = load_SLAMS(file)
         ids = mat2cell(cel{:, 1}, cell_converter_tool, 1);
         SLAMS = struct('id', ids, 'start', starts, 'stop', stops);
 
-        if setting_get(dataset_info.finder_settings, 'Include_GSE_coords')
+        if setting_get(database_info.finder_settings, 'Include_GSE_coords')
             col_idx = get_col_idx('x_GSE');
             col_range = col_idx:(col_idx + 2);
             pos = mat2cell([cel{:, col_range}], cell_converter_tool, 3);
             [SLAMS.pos_GSE] = pos{:};
         end
 
-        if setting_get(dataset_info.finder_settings, 'Include_B_stats')
+        if setting_get(database_info.finder_settings, 'Include_B_stats')
             col_idx = get_col_idx('B_background_mean');
             B_bg_mean = mat2cell(cel{:, col_idx}, cell_converter_tool, 1);
             B_mean = mat2cell(cel{:, col_idx + 1}, cell_converter_tool, 1);
@@ -133,43 +144,30 @@ function [SLAMS, dataset_info] = load_SLAMS(file)
             [SLAMS.B_rel_max] = B_rel_max{:};           
         end
 
-        if setting_get(dataset_info.finder_settings, 'Include_region_stats')
-            col_idx = get_col_idx(dataset_info.region_classes{1});
-            n_classes = dataset_info.n_region_classes;
-            col_range_posteriors = col_idx:(col_idx + n_classes - 1);
-            col_range_mahaldist = col_range_posteriors + n_classes;
-            col_logpdf = col_range_mahaldist(end) + 1;
-
-            posteriors = mat2cell([cel{:, col_range_posteriors}], cell_converter_tool, n_classes);
-            mahaldist = mat2cell([cel{:, col_range_mahaldist}], cell_converter_tool, n_classes);
-            logpdf = mat2cell([cel{:, col_logpdf}], cell_converter_tool, 1);
+        if setting_get(database_info.finder_settings, 'Include_region_stats')
+            col_idx = get_col_idx(database_info.region_classes{1});
+            n_classes = database_info.n_region_classes;
 
             try
-                region_windows = setting_get(dataset_info.finder_settings, 'Region_time_windows');
-            catch
-                region_windows = [];
-            end
-
-            if ~isempty(region_windows)
+                region_windows = setting_get(database_info.finder_settings, 'Region_time_windows');
                 n_windows = length(region_windows);
-                col_idx = col_logpdf + 1;
-                col_range = col_idx:(col_idx + n_windows*(2*n_classes + 1) - 1);
-
-                tmp = reshape([cel{:, col_range}], n_SLAMS, (2*n_classes + 1), []);
-                tmp = permute(tmp, [3, 2, 1]);
-                tmp = mat2cell(tmp, n_windows, [n_classes, n_classes, 1], n_SLAMS);
-                posterior_windows = mat2cell(tmp{1}, n_windows, n_classes, cell_converter_tool);
-                mahaldist_windows = mat2cell(tmp{2}, n_windows, n_classes, cell_converter_tool);
-                logpdf_windows = mat2cell(tmp{3}, n_windows, 1, cell_converter_tool);
-
-                [SLAMS.region_posterior_windows] = posterior_windows{:};
-                [SLAMS.region_mahaldist_windows] = mahaldist_windows{:};
-                [SLAMS.region_logpdf_windows] = logpdf_windows{:};
+            catch
+                n_windows = 0;
             end
+
+            n_sets = n_windows + 1;
+            col_range = col_idx:(col_idx + n_sets*(2*n_classes + 1) - 1);
+
+            tmp = reshape([cel{:, col_range}], n_SLAMS, (2*n_classes + 1), []);
+            tmp = permute(tmp, [3, 2, 1]);
+            tmp = mat2cell(tmp, n_sets, [n_classes, n_classes, 1], n_SLAMS);
+            posteriors = mat2cell(tmp{1}, n_sets, n_classes, cell_converter_tool);
+            mahaldists = mat2cell(tmp{2}, n_sets, n_classes, cell_converter_tool);
+            logpdfs = mat2cell(tmp{3}, n_sets, 1, cell_converter_tool);
 
             [SLAMS.region_posterior] = posteriors{:};
-            [SLAMS.region_mahaldist] = mahaldist{:};
-            [SLAMS.region_logpdf] = logpdf{:};
+            [SLAMS.region_mahaldist] = mahaldists{:};
+            [SLAMS.region_logpdf] = logpdfs{:};
         end
 
         function col_idx = get_col_idx(col_name)
@@ -182,5 +180,38 @@ function [SLAMS, dataset_info] = load_SLAMS(file)
             start_idx = idx + 1;
             col_idx = str2double(header(start_idx:stop_idx));
         end
+    end
+end
+
+function map = read_search_durations(dir_path, database_info)
+    file_sd = fopen([dir_path, '\search_durations.txt'], 'r');
+
+    formatSpec = '%d,%d = ';
+
+    try
+        include_region_stats = setting_get(database_info.finder_settings, 'Include_region_stats');
+    catch
+        include_region_stats = false;
+    end
+
+    if include_region_stats
+        wid = database_info.n_region_classes + 1;
+        format_add = repmat('%f', [1, wid]);
+        format_add = ['[', format_add, ']'];
+        formatSpec = [formatSpec, format_add];
+    else
+        wid = 1;
+        format_add = '%f';
+        formatSpec = [formatSpec, format_add];
+    end
+    mat = fscanf(file_sd, formatSpec);
+    mat = reshape(mat, wid + 2, [])';
+
+    map = containers.Map;
+    [row, col] = size(mat);
+    for i = 1:row
+        key = sprintf('%d,%d', mat(i, 1), mat(i, 2));
+        value = mat(i,3:col);
+        map(key) = value;
     end
 end

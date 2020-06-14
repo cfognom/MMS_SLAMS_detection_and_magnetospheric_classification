@@ -13,6 +13,7 @@ classdef SLAMS_finder < handle
         tint_load
         tint
         sc
+        search_durations
     end
     
     methods
@@ -29,6 +30,7 @@ classdef SLAMS_finder < handle
             obj.last_run_results = struct;
             obj.construct_region_classifier(r.Show_region_classifier_steps, r.Show_region_classifier_SLAMS);
             obj.sc = lower(r.Spacecraft);
+            obj.search_durations = containers.Map;
         end
 
         function data = create_region_data(~, E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion)
@@ -38,7 +40,7 @@ classdef SLAMS_finder < handle
             E_mean = sum(E_per_bin.*E_bins_center, 2)./E_tot;
             E_MAD = sum(E_per_bin.*(abs(E_bins_center - E_mean)), 2)./E_tot;
             ang = acos(-v_ion(:,1)./sqrt(sum(v_ion.^2, 2)))/pi;
-            ang = log(ang);
+            ang = max(log(ang), -7);
             data = [E_MAD, E_mean, ang];
         end
 
@@ -143,9 +145,11 @@ classdef SLAMS_finder < handle
                 plot_points(X, 'GMM clusters with boundary', y, X_bound)
             end
 
-            function [y, probs, mahaldist, logpdf] = classifierFunction(X)
-                [y, ~, probs, logpdf, d2] = cluster(model, X);
-                mahaldist = sqrt(d2);
+            function [y, posteriors, mahaldists, logpdfs] = classifierFunction(X)
+                [y, ~, posteriors, logpdfs, d2] = cluster(model, X);
+                % idx = find(isnan(logpdfs))
+                % X(idx, :)
+                mahaldists = sqrt(d2);
             end
 
             function y = merge_clusters(y, map)
@@ -194,22 +198,22 @@ classdef SLAMS_finder < handle
                 title(name)
                 xlabel('MAD log energy flux');
                 ylabel('Mean log energy flux');
-                zlabel('log v angle')
+                zlabel('log bulk_v cone angle');
             end
         end
 
-        function [probs, mahaldist, logpdf] = region_classify(obj)
+        function [posteriors, mahaldists, logpdfs] = region_classify(obj)
             obj.load_ts({'E_ion_center', 'E_ion_delta', 'E_ion_omni', 'v_ion'});
 
             t = obj.ts.E_ion_omni.time;
 
             X = obj.create_region_data(obj.ts.E_ion_center.data, obj.ts.E_ion_delta.data, obj.ts.E_ion_omni.data, obj.ts.v_ion.data);
 
-            [y, probs, mahaldist, logpdf] = obj.region_classifier(X);
+            [y, posteriors, mahaldists, logpdfs] = obj.region_classifier(X);
 
-            probs = TSeries(t, probs);
-            mahaldist = TSeries(t, mahaldist);
-            logpdf = TSeries(t, logpdf);
+            posteriors = TSeries(t, posteriors);
+            mahaldists = TSeries(t, mahaldists);
+            logpdfs = TSeries(t, logpdfs);
 
             ts_label = TSeries(t, y);
             tints_cell_region = labels2tints(ts_label, 1:obj.n_classes);
@@ -217,11 +221,65 @@ classdef SLAMS_finder < handle
 
             obj.last_run_results.region_plotter = @plotter;
             function plotter(plt)
-                plt.lineplot('class_probs', probs, 'ylabel', 'Posterior', 'legend', obj.classes, 'colorOrder', [1 0 0; 0 0.7 0; 0 0 1; 0 0.7 0.7])
+                plt.lineplot('class_probs', posteriors, 'ylabel', 'Posterior', 'legend', obj.classes, 'colorOrder', [1 0 0; 0 0.7 0; 0 0 1; 0 0.7 0.7])
             end
 
             function v = majorityVote(x)
                 [~, v] = max(accumarray(x,1));
+            end
+        end
+
+        function track_search_durations(obj, r)
+            obj.load_ts({'pos'})
+
+            pos = tlim(obj.ts.pos, obj.tint);
+            t = pos.time;
+            pos = pos.data/6378;
+            x = pos(:,1);
+            xy = irf_abs(pos(:,2:3), 1);
+            xBS = bowshock_pos(xy);
+            xBS = x - xBS;
+            xBS_disc = ceil(xBS);
+            yBS_disc = ceil(xy);
+
+            tmp = xBS_disc(2:end) ~= xBS_disc(1:end-1);
+            starts_xBS = [1; tmp];
+            stops_xBS = [tmp; 1];
+            tmp = yBS_disc(2:end) ~= yBS_disc(1:end-1);
+            starts_yBS = [1; tmp];
+            stops_yBS = [tmp; 1];
+            starts = find(starts_xBS | starts_yBS);
+            stops = find(stops_xBS | stops_yBS);
+
+            n_tints = length(starts);
+            for i = 1:n_tints
+                t_start = t(starts(i));
+                t_stop = t(stops(i));
+                dur = t_stop - t_start;
+                key = [num2str(xBS_disc(starts(i))), ',', num2str(yBS_disc(starts(i)))];
+                if r.Include_region_stats
+                    arr_new = zeros(1, obj.n_classes + 1);
+                    arr_new(end) = dur;
+                    for j = 1:obj.n_classes 
+                        class_tints = intersect_tints(obj.last_run_results.tints_cell_region{j}, [t_start, t_stop]);
+                        dif = diff(class_tints.epoch);
+                        dur_class = sum(dif(1:2:end)./1e9);
+                        arr_new(j) = dur_class;
+                    end
+                    if isKey(obj.search_durations, key)
+                        arr = obj.search_durations(key);
+                        arr = arr + arr_new;
+                        obj.search_durations(key) = arr;
+                    else
+                        obj.search_durations(key) = arr_new;
+                    end
+                else
+                    if isKey(obj.search_durations, key)
+                        obj.search_durations(key) = obj.search_durations(key) + dur;
+                    else
+                        obj.search_durations(key) = dur;
+                    end
+                end
             end
         end
         
@@ -368,6 +426,7 @@ classdef SLAMS_finder < handle
             addParameter(p, 'Include_region_stats', true)
             addParameter(p, 'Region_time_windows', [])
             addParameter(p, 'Include_GSE_coords', true)
+            addParameter(p, 'Track_search_durations', true)
             addParameter(p, 'Extra_load_time', 60)
             addParameter(p, 'SLAMS_B_bg_method', 'median')
             addParameter(p, 'SLAMS_B_bg_window', 60)
@@ -380,7 +439,14 @@ classdef SLAMS_finder < handle
 
             SLAMS = obj.SLAMS_find(r);
             if r.Include_region_stats
-                [probs, mahaldist, logpdf] = obj.region_classify();
+                [posteriors, mahaldists, logpdfs] = obj.region_classify();
+                % any(isnan(posteriors.data))
+                % any(isnan(mahaldists.data))
+                % any(isnan(logpdfs.data))
+            end
+
+            if r.Track_search_durations
+                obj.track_search_durations(r);
             end
             
             if ~isempty(SLAMS)
@@ -400,39 +466,39 @@ classdef SLAMS_finder < handle
                     end
                     
                     if r.Include_region_stats
-                        t = probs.time.epoch;
+                        t = posteriors.time.epoch;
                         [~, idx_closest] = min(abs(SLAMS_mid - t'), [], 2);
-                        probs_cell = mat2cell(probs.data(idx_closest, :), cell_converter_tool, obj.n_classes);
-                        mahaldist_cell = mat2cell(mahaldist.data(idx_closest, :), cell_converter_tool, obj.n_classes);
-                        logpdf_cell = mat2cell(logpdf.data(idx_closest, :), cell_converter_tool, 1);
+                        SLAMS_posteriors = permute(posteriors.data(idx_closest, :), [3, 2, 1]);
+                        SLAMS_mahaldists = permute(mahaldists.data(idx_closest, :), [3, 2, 1]);
+                        SLAMS_logpdfs = permute(logpdfs.data(idx_closest, :), [3, 2, 1]);
 
-                        [SLAMS.region_posterior] = probs_cell{:};
-                        [SLAMS.region_mahaldist] = mahaldist_cell{:};
-                        [SLAMS.region_logpdf] = logpdf_cell{:};
+                        n_sets = 1;
 
                         if ~isempty(r.Region_time_windows)
                             n_windows = length(r.Region_time_windows);
+                            n_sets = n_sets + n_windows;
                             dt = int64((1e9*r.Region_time_windows)/2);
-                            SLAMS_window_start = SLAMS_mid - dt;
-                            SLAMS_window_stop = SLAMS_mid + dt;
-                            t_3d = reshape(t, 1, 1, []);
-                            logical_after_start = SLAMS_window_start < t_3d;
-                            logical_before_stop = SLAMS_window_stop > t_3d;
+                            window_start = SLAMS_mid - dt;
+                            window_stop = SLAMS_mid + dt;
+                            % t_3d = reshape(t, 1, 1, []);
+                            t_3d = permute(t, [3, 2, 1]);
+                            logical_after_start = window_start < t_3d;
+                            logical_before_stop = window_stop > t_3d;
                             logical_inside_window = logical_after_start & logical_before_stop;
-
                             n_inside_window = sum(logical_inside_window, 3);
-                            probs3d = mean3d(probs.data, logical_inside_window, n_inside_window);
-                            mahaldist3d = mean3d(mahaldist.data, logical_inside_window, n_inside_window);
-                            logpdf3d = log(mean3d(exp(logpdf.data), logical_inside_window, n_inside_window));
 
-                            probs3d_cell = mat2cell(probs3d, n_windows, obj.n_classes, cell_converter_tool);
-                            mahaldist3d_cell = mat2cell(mahaldist3d, n_windows, obj.n_classes, cell_converter_tool);
-                            logpdf3d_cell = mat2cell(logpdf3d, n_windows, 1, cell_converter_tool);
-                            
-                            [SLAMS.region_posterior_windows] = probs3d_cell{:};
-                            [SLAMS.region_mahaldist_windows] = mahaldist3d_cell{:};
-                            [SLAMS.region_logpdf_windows] = logpdf3d_cell{:};
+                            SLAMS_posteriors = vertcat(SLAMS_posteriors, mean3d(posteriors.data, logical_inside_window, n_inside_window));
+                            SLAMS_mahaldists = vertcat(SLAMS_mahaldists, mean3d(mahaldists.data, logical_inside_window, n_inside_window));
+                            SLAMS_logpdfs = vertcat(SLAMS_logpdfs, log(mean3d(exp(logpdfs.data), logical_inside_window, n_inside_window)));
                         end
+
+                        SLAMS_posteriors = mat2cell(SLAMS_posteriors, n_sets, obj.n_classes, cell_converter_tool);
+                        SLAMS_mahaldists = mat2cell(SLAMS_mahaldists, n_sets, obj.n_classes, cell_converter_tool);
+                        SLAMS_logpdfs = mat2cell(SLAMS_logpdfs, n_sets, 1, cell_converter_tool);
+
+                        [SLAMS.region_posterior] = SLAMS_posteriors{:};
+                        [SLAMS.region_mahaldist] = SLAMS_mahaldists{:};
+                        [SLAMS.region_logpdf] = SLAMS_logpdfs{:};
                     end
                 end
                 
