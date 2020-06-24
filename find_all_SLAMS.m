@@ -31,43 +31,56 @@ function main(sc, tints_search, settings, SLAMS_db_path, database_name, plot_pre
 
     finder = SLAMS_finder('Spacecraft', sc, 'Show_region_classifier_steps', false);
     
-    tints_active = get_tints_active(tints_search);
+    [tints_active, tints_fgm] = get_tints_active(tints_search);
     
     tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
     
-    n_tints = length(tints_valid)/2;
+    % search_tints(tints_valid, '\SLAMS_active.csv', '\search_durations_classes.txt')
     
-    write_info(dir_path, settings, tints_search, finder);
-    file_SLAMS = fopen([dir_path, '\SLAMS.csv'], 'w');
-    header_str = construct_header(settings, finder);
-    fprintf(file_SLAMS, header_str);
-    current_id = 1;
-    for i = 1:n_tints
-        fprintf('Looking for SLAMS in interval %u/%u\n', i, n_tints);
-        tint = select_tint(tints_valid, i);
-        extra_load_time = setting_get(settings, 'Extra_load_time');
-        tint = [tint(1) + extra_load_time, tint(2) + -extra_load_time];
-        SLAMS = finder.evaluate(tint, settings{:});
-        if plot_prediction
-            finder.plot_prediction(tint);
-        end
-        current_id = write_SLAMS(file_SLAMS, SLAMS, settings, current_id, finder);
-        % break;
-    end
+    tints_only_fgm = subtract_tints(tints_fgm, tints_active);
+    tints_only_fgm = remove_short_tints(tints_only_fgm, 2*setting_get(settings, 'Extra_load_time'));
 
-    try
-        track_search_durations = setting_get(settings, 'Track_search_durations');
-    catch
-        track_search_durations = false;
-    end
-    
-    if track_search_durations
-        write_search_durations(dir_path, finder);
-    end
+    settings = setting_set(settings, 'Extra_load_time', -setting_get(settings, 'Extra_load_time'));
+    settings = setting_set(settings, 'Include_region_stats', false);
+
+    search_tints(tints_only_fgm, '\SLAMS.csv', '\search_durations.txt');
 
     disp('Done!')
     % fclose(file_SLAMS);
     fclose('all');
+
+    function search_tints(tints, name_SLAMS, name_search_durations)
+        n_tints = length(tints)/2;
+        
+        write_info(dir_path, settings, tints_search, finder);
+        file_SLAMS = fopen([dir_path, name_SLAMS], 'w');
+        header_str = construct_header(settings, finder);
+        fprintf(file_SLAMS, header_str);
+        current_id = 1;
+        for i = 1:n_tints
+            fprintf('Looking for SLAMS in interval %u/%u\n', i, n_tints);
+            tint = select_tint(tints, i);
+            extra_load_time = setting_get(settings, 'Extra_load_time');
+            tint = [tint(1) + extra_load_time, tint(2) + -extra_load_time];
+            SLAMS = finder.evaluate(tint, settings{:});
+            if plot_prediction
+                finder.plot_prediction(tint);
+            end
+            current_id = write_SLAMS(file_SLAMS, SLAMS, settings, current_id, finder);
+            % break;
+        end
+    
+        try
+            track_search_durations = setting_get(settings, 'Track_search_durations');
+        catch
+            track_search_durations = false;
+        end
+        
+        if track_search_durations
+            write_search_durations(dir_path, name_search_durations, finder);
+        end
+        fclose(file_SLAMS);
+    end
 end
 
 function write_info(dir_path, settings, tints_search, finder)
@@ -165,16 +178,25 @@ function current_id = write_SLAMS(file_SLAMS, SLAMS, settings, current_id, finde
     end
 end
 
-function write_search_durations(dir_path, finder)
-    file_sd = fopen([dir_path, '\search_durations.txt'], 'w');
+function write_search_durations(dir_path, name, finder)
+    file_sd = fopen([dir_path, name], 'w');
 
     map = finder.search_durations;
-    % n_bins = map.Count;
+    % n_bins = map_classes.Count;
     k = keys(map);
     for i = k
         fprintf(file_sd, [i{:}, ' = ', mat2str(map(i{:})), '\n']);
     end
     fclose(file_sd);
+
+    % file_sd = fopen([dir_path, '\search_durations.txt'], 'w');
+
+    % map = finder.search_durations;
+    % k = keys(map);
+    % for i = k
+    %     fprintf(file_sd, [i{:}, ' = ', mat2str(map(i{:})), '\n']);
+    % end
+    % fclose(file_sd);
 end
 
 function header = construct_header(settings, finder)

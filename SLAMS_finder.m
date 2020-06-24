@@ -1,7 +1,7 @@
 classdef SLAMS_finder < handle
     %SLAMS_FINDER Finds SLAMS
-    %   Instatiate this class and then run the method evaluate to find SLAMS.
-    %   Check the constructor and the evaluate method for valid name value pairs.
+    %   Instatiate this class and then run the method 'evaluate' to find SLAMS.
+    %   Check the constructor and the 'evaluate' method for valid name value pairs.
     
     properties
         region_classifier
@@ -13,6 +13,7 @@ classdef SLAMS_finder < handle
         tint_load
         tint
         sc
+        search_durations_classes
         search_durations
     end
     
@@ -235,12 +236,9 @@ classdef SLAMS_finder < handle
             pos = tlim(obj.ts.pos, obj.tint);
             t = pos.time;
             pos = pos.data/6378;
-            x = pos(:,1);
-            xy = irf_abs(pos(:,2:3), 1);
-            xBS = bowshock_pos(xy);
-            xBS = x - xBS;
-            xBS_disc = ceil(xBS);
-            yBS_disc = ceil(xy);
+            BS = GSE2BS(pos);
+            xBS_disc = ceil(BS(:,1));
+            yBS_disc = ceil(BS(:,2));
 
             tmp = xBS_disc(2:end) ~= xBS_disc(1:end-1);
             starts_xBS = [1; tmp];
