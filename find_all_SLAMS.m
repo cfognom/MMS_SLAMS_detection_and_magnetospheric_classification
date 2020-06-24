@@ -1,13 +1,26 @@
 sc = 'MMS1';
 
+% If true plots the time series, only use this for debugging.
 plot_prediction = false;
+
+% If true also searches intervals where only fgm instrument is active.
+search_everything = true;
 
 SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database';
 
 database_name = 'identified_SLAMS';
 
-tints_search = search_intervals();
+% Time intervals when MMS is near bow shock
+% Taken from MMS science data center orbit plots
+time_intervals = {
+    '2015-10-01T00:00:00.000000000Z', '2016-01-30T00:00:00.000000000Z';
+    '2016-11-01T00:00:00.000000000Z', '2017-05-09T00:00:00.000000000Z';
+    '2017-09-08T00:00:00.000000000Z', '2018-05-23T00:00:00.000000000Z';
+    '2018-09-23T00:00:00.000000000Z', '2019-06-16T00:00:00.000000000Z';
+    '2019-09-26T00:00:00.000000000Z', '2020-06-08T00:00:00.000000000Z';
+};
 
+% settings for the SLAMS finder
 settings = {
     'Include_B_stats', true, ...
     'Include_region_stats', true, ...
@@ -21,29 +34,35 @@ settings = {
     'SLAMS_min_duration', 0
 };
 
-main(sc, tints_search, settings, SLAMS_db_path, database_name, plot_prediction);
+main(sc, tints_search, settings, SLAMS_db_path, database_name, plot_prediction, search_everything);
 
-function main(sc, tints_search, settings, SLAMS_db_path, database_name, plot_prediction)
+function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_everything)
     dir_path = [SLAMS_db_path, '\', database_name];
     if ~exist(dir_path, 'dir')
         mkdir(dir_path);
     end
 
+    % init finder
     finder = SLAMS_finder('Spacecraft', sc, 'Show_region_classifier_steps', false);
     
-    [tints_active, tints_fgm] = get_tints_active(tints_search);
-    
+    % get tints
+    tints_search = UTC2tints(time_intervals);
+    [tints_active, tints_fgm] = get_tints_active(tints_search, 'search');
+
+    % find SLAMS where fpi and mec data is available
     tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
+    search_tints(tints_valid, '\SLAMS_active.csv', '\search_durations_classes.txt')
     
-    % search_tints(tints_valid, '\SLAMS_active.csv', '\search_durations_classes.txt')
-    
-    tints_only_fgm = subtract_tints(tints_fgm, tints_active);
-    tints_only_fgm = remove_short_tints(tints_only_fgm, 2*setting_get(settings, 'Extra_load_time'));
+    if search_everything
+        % find SLAMS where only fgm data is available
+        tints_only_fgm = subtract_tints(tints_fgm, tints_active);
+        tints_valid = remove_short_tints(tints_only_fgm, 2*setting_get(settings, 'Extra_load_time'));
 
-    settings = setting_set(settings, 'Extra_load_time', -setting_get(settings, 'Extra_load_time'));
-    settings = setting_set(settings, 'Include_region_stats', false);
+        settings = setting_set(settings, 'Extra_load_time', -setting_get(settings, 'Extra_load_time'));
+        settings = setting_set(settings, 'Include_region_stats', false);
 
-    search_tints(tints_only_fgm, '\SLAMS.csv', '\search_durations.txt');
+        search_tints(tints_valid, '\SLAMS.csv', '\search_durations.txt');
+    end
 
     disp('Done!')
     % fclose(file_SLAMS);

@@ -1,8 +1,8 @@
-function [tints_active, tints_fgm, tints_fpi, tints_mec] = get_tints_active(tints_user)
+function [tints_active, tints_fgm, tints_fpi, tints_mec] = get_tints_active(tints_user, name)
     
-    tints_fgm = EpochTT(int64(get_cached_matrix('tints_fgm', @make_tints_fgm_matrix)));
-    tints_fpi = EpochTT(int64(get_cached_matrix('tints_fpi', @make_tints_fpi_matrix)));
-    tints_mec = EpochTT(int64(get_cached_matrix('tints_mec', @make_tints_mec_matrix)));
+    tints_fgm = EpochTT(int64(get_cached_matrix(['tints_fgm_', name], @make_tints_fgm_matrix)));
+    tints_fpi = EpochTT(int64(get_cached_matrix(['tints_fpi_', name], @make_tints_fpi_matrix)));
+    tints_mec = EpochTT(int64(get_cached_matrix(['tints_mec_', name], @make_tints_mec_matrix)));
 
     tints_active = intersect_tints(tints_fgm, tints_fpi, tints_mec);
     

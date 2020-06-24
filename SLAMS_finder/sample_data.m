@@ -1,10 +1,18 @@
 function sample_data()
-%SAMPLE_DATA Summary of this function goes here
-%   Detailed explanation goes here
 
-    tints_search = search_intervals();
+    % Time intervals when MMS is near bow shock
+    % Taken from MMS science data center orbit plots
+    time_intervals = {
+        '2015-10-01T00:00:00.000000000Z', '2016-01-30T00:00:00.000000000Z';
+        '2016-11-01T00:00:00.000000000Z', '2017-05-09T00:00:00.000000000Z';
+        '2017-09-08T00:00:00.000000000Z', '2018-05-23T00:00:00.000000000Z';
+        '2018-09-23T00:00:00.000000000Z', '2019-06-16T00:00:00.000000000Z';
+        '2019-09-26T00:00:00.000000000Z', '2020-06-08T00:00:00.000000000Z';
+    };
 
-    tints_active = get_tints_active(tints_search);
+    tints_search = UTC2tints(time_intervals);
+
+    tints_active = get_tints_active(tints_search, 'sample');
 
     rng(100)
     n = 10000;
