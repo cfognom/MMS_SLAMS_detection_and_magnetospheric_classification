@@ -1,4 +1,0 @@
-batchgetBsc1_4;
-%batchgetEdatasc1_4;
-batchgetfpidatasc1_4;
-batchgetmecdatasc1_4;
