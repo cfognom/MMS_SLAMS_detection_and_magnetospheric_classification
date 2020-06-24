@@ -18,6 +18,13 @@ function ts = load_tints_MMS(filePrefix, variable, tints, varargin)
         tint = select_tint(tints, i);
         if r.trim
             tmp_ts = mms.db_get_ts(filePrefix, variable, tint);
+            if iscell(tmp_ts)
+                tmp_tmp_ts = tmp_ts{1};
+                for j = 2:length(tmp_ts)
+                    tmp_tmp_ts = tmp_tmp_ts.combine(tmp_ts{j});
+                end
+                tmp_ts = tmp_tmp_ts;
+            end
         else
             tmp_ts = mms.variable2ts(mms.db_get_variable(filePrefix, variable, tint));
         end
