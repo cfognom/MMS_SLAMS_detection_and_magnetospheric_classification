@@ -34,7 +34,7 @@ settings = {
     'SLAMS_min_duration', 0
 };
 
-main(sc, tints_search, settings, SLAMS_db_path, database_name, plot_prediction, search_everything);
+main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_everything);
 
 function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_everything)
     dir_path = [SLAMS_db_path, '\', database_name];
@@ -47,11 +47,12 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     
     % get tints
     tints_search = UTC2tints(time_intervals);
+    write_info(dir_path, settings, tints_search, finder, search_everything);
     [tints_active, tints_fgm] = get_tints_active(tints_search, 'search');
 
     % find SLAMS where fpi and mec data is available
     tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
-    search_tints(tints_valid, '\SLAMS_active.csv', '\search_durations_classes.txt')
+    search_tints(tints_valid, '\SLAMS.csv', '\search_durations.txt')
     
     if search_everything
         % find SLAMS where only fgm data is available
@@ -61,7 +62,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
         settings = setting_set(settings, 'Extra_load_time', -setting_get(settings, 'Extra_load_time'));
         settings = setting_set(settings, 'Include_region_stats', false);
 
-        search_tints(tints_valid, '\SLAMS.csv', '\search_durations.txt');
+        search_tints(tints_valid, '\SLAMS_inactive.csv', '\search_durations_inactive.txt');
     end
 
     disp('Done!')
@@ -71,7 +72,6 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     function search_tints(tints, name_SLAMS, name_search_durations)
         n_tints = length(tints)/2;
         
-        write_info(dir_path, settings, tints_search, finder);
         file_SLAMS = fopen([dir_path, name_SLAMS], 'w');
         header_str = construct_header(settings, finder);
         fprintf(file_SLAMS, header_str);
@@ -102,7 +102,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     end
 end
 
-function write_info(dir_path, settings, tints_search, finder)
+function write_info(dir_path, settings, tints_search, finder, search_everything)
     file_info = fopen([dir_path, '\database_info.txt'], 'w');
 
     sc_str = {'Spacecraft:', finder.sc};
@@ -128,6 +128,12 @@ function write_info(dir_path, settings, tints_search, finder)
         priors_str = [strjoin(priors_str, '\n\t'), '\n'];
         fprintf(file_info, priors_str);
     end
+
+    other_str = {'Search_everything', mat2str(search_everything)};
+    other_str = join(other_str, ' = ');
+    other_str = vertcat({'Other:'}, other_str);
+    other_str = [strjoin(other_str, '\n\t'), '\n'];
+    fprintf(file_info, other_str);
 
     fclose(file_info);
 end
