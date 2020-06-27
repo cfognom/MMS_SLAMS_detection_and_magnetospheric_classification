@@ -363,7 +363,7 @@ classdef SLAMS_finder < handle
         function plot_comparison(obj, tint, tints_true_SLAMS)
             obj.load_ts({'b', 'b_abs', 'v_ion', 'v_ion_abs', 'n_ion', 'E_ion_omni', 'E_ion_center', 'E_ion_delta', 'pos'})
 
-            plt = modular_plot('title', [upper(obj.sc), ', automatic vs manual SLAMS identification']);
+            plt = modular_plot('title', [upper(obj.sc), ', automatic vs manual SLAMS detection']);
             if isfield(obj.last_run_results, 'region_plotter')
                 obj.last_run_results.region_plotter(plt);
             end
