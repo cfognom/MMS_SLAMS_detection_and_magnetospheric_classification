@@ -10,7 +10,7 @@ SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database
 
 database_name = 'identified_SLAMS';
 
-% Time intervals when MMS is near bow shock
+% Time intervals when MMS apogee is touching the magnetopause
 % Taken from MMS science data center orbit plots
 time_intervals = {
     '2015-10-01T00:00:00.000000000Z', '2016-01-30T00:00:00.000000000Z';
@@ -62,7 +62,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
         settings = setting_set(settings, 'Extra_load_time', -setting_get(settings, 'Extra_load_time'));
         settings = setting_set(settings, 'Include_region_stats', false);
 
-        search_tints(tints_valid, '\SLAMS_inactive.csv', '\search_durations_inactive.txt');
+        search_tints(tints_valid, '\SLAMS_unclassified.csv', '\search_durations_unclassified.txt');
     end
 
     disp('Done!')

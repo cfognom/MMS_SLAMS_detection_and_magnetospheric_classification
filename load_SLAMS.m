@@ -20,12 +20,12 @@ function SLAMS_database = load_SLAMS(database_name)
         original_setting = setting_get(SLAMS_database.finder_settings, 'Include_region_stats');
         SLAMS_database.finder_settings = setting_set(SLAMS_database.finder_settings, 'Include_region_stats', false);
 
-        SLAMS_database.SLAMS_inactive = read_SLAMS([dir_path, '\SLAMS_inactive.csv'], SLAMS_database);
+        SLAMS_database.SLAMS_unclassified = read_SLAMS([dir_path, '\SLAMS_unclassified.csv'], SLAMS_database);
         
         if setting_get(SLAMS_database.finder_settings, 'Track_search_durations')
-            SLAMS_database.search_durations_inactive = read_search_durations([dir_path, '\search_durations_inactive.txt'], SLAMS_database);
+            SLAMS_database.search_durations_unclassified = read_search_durations([dir_path, '\search_durations_unclassified.txt'], SLAMS_database);
         end
-        
+
         SLAMS_database.finder_settings = setting_set(SLAMS_database.finder_settings, 'Include_region_stats', original_setting);
     end
 

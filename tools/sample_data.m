@@ -1,6 +1,6 @@
 function sample_data()
 
-    % Time intervals when MMS is near bow shock
+    % Time intervals when MMS apogee is touching the magnetopause
     % Taken from MMS science data center orbit plots
     time_intervals = {
         '2015-10-01T00:00:00.000000000Z', '2016-01-30T00:00:00.000000000Z';
