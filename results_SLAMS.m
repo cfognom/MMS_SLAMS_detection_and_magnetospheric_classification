@@ -172,7 +172,7 @@ function results_SLAMS(SLAMS_database)
     % histogram_angles(SLAMS, SLAMS_classes);
     
     plot_strength(SLAMS_classes);
-    % SLAMS_filter = setting_set(SLAMS_filter, 'B_filter', @(B_bg_mean, B_mean, B_max, B_rel_mean, B_rel_max) B_rel_max > 4);
+    % SLAMS_filter = setting_set(SLAMS_filter, 'B_filter', @(B0_mean, B_mean, B_max, B_rel_mean, B_rel_max) B_rel_max > 4);
     % SLAMS_strong = filter_SLAMS(SLAMS, SLAMS_filter{:});
     % figure;
     % plot_pos(SLAMS_strong, 'k.')

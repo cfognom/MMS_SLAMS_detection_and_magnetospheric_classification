@@ -13,9 +13,10 @@ SLAMS finder settings:
 	Include_GSE_coords = true
 	Track_search_durations = true
 	Extra_load_time = 240
-	SLAMS_B_bg_method = median
-	SLAMS_B_bg_window = 60
-	SLAMS_threshold = 2
+	SLAMS_B0_method = median
+	SLAMS_B0_window = 60
+	SLAMS_detection_constant = 2
+	SLAMS_merging_constant = 1.5
 	SLAMS_min_duration = 0
 Region class priors:
 	MSP = 0.19859
@@ -23,4 +24,4 @@ Region class priors:
 	MSH = 0.52032
 	FS = 0.080431
 Other:
-	Search_everything = true
+	Search_outside_fpi = true

@@ -286,17 +286,17 @@ classdef SLAMS_finder < handle
 
             t = obj.ts.b_abs.time;
 
-            switch r.SLAMS_B_bg_method
+            switch r.SLAMS_B0_method
             case 'mean'
-                obj.ts.b_bg = TSeries(t, movmean(obj.ts.b_abs.data, r.SLAMS_B_bg_window*1e9, 1, 'SamplePoints', obj.ts.b_abs.time.epoch));
+                obj.ts.b0 = TSeries(t, movmean(obj.ts.b_abs.data, r.SLAMS_B0_window*1e9, 1, 'SamplePoints', obj.ts.b_abs.time.epoch));
             case 'median'
-                obj.ts.b_bg = TSeries(t, movmedian(obj.ts.b_abs.data, r.SLAMS_B_bg_window*1e9, 1, 'SamplePoints', obj.ts.b_abs.time.epoch));
+                obj.ts.b0 = TSeries(t, movmedian(obj.ts.b_abs.data, r.SLAMS_B0_window*1e9, 1, 'SamplePoints', obj.ts.b_abs.time.epoch));
             case 'harmmean'
-                obj.ts.b_bg = moving_window_func(obj.ts.b_abs, r.SLAMS_B_bg_window, @(x) harmmean(x.data), t);
+                obj.ts.b0 = moving_window_func(obj.ts.b_abs, r.SLAMS_B0_window, @(x) harmmean(x.data), t);
             end
 
-            b_upper_thresh = r.SLAMS_threshold*obj.ts.b_bg;
-            b_lower_thresh = ((r.SLAMS_threshold - 1)/2 + 1)*obj.ts.b_bg;
+            b_upper_thresh = r.SLAMS_detection_constant*obj.ts.b0;
+            b_lower_thresh = r.SLAMS_merging_constant*obj.ts.b0;
 
             logic_above = obj.ts.b_abs.data > b_upper_thresh.data;
             logic_under = obj.ts.b_abs.data < b_lower_thresh.data;
@@ -321,7 +321,7 @@ classdef SLAMS_finder < handle
             
             obj.last_run_results.SLAMS_plotter = @plotter;
             function plotter(plt, name, arg)
-                plt.lineplot(name, obj.ts.b_bg, 'color', 'c');
+                plt.lineplot(name, obj.ts.b0, 'color', 'c');
                 plt.lineplot(name, b_lower_thresh, 'color', 'm');
                 plt.lineplot(name, b_upper_thresh, 'color', 'r', arg{:});
             end
@@ -425,10 +425,11 @@ classdef SLAMS_finder < handle
             addParameter(p, 'Region_time_windows', [])
             addParameter(p, 'Include_GSE_coords', true)
             addParameter(p, 'Track_search_durations', true)
-            addParameter(p, 'Extra_load_time', 60)
-            addParameter(p, 'SLAMS_B_bg_method', 'median')
-            addParameter(p, 'SLAMS_B_bg_window', 60)
-            addParameter(p, 'SLAMS_threshold', 2)
+            addParameter(p, 'Extra_load_time', 30)
+            addParameter(p, 'SLAMS_B0_method', 'median')
+            addParameter(p, 'SLAMS_B0_window', 60)
+            addParameter(p, 'SLAMS_detection_constant', 2)
+            addParameter(p, 'SLAMS_merging_constant', 1.5)
             addParameter(p, 'SLAMS_min_duration', 0)
             parse(p, tint, varargin{:})
             r = p.Results;
@@ -505,11 +506,11 @@ classdef SLAMS_finder < handle
                     for j = 1:n_SLAMS
                         logical_idx = (SLAMS(j).start.epoch <= t) & (SLAMS(j).stop.epoch >= t);
                         B_abs = obj.ts.b_abs.data(logical_idx);
-                        B_bg = obj.ts.b_bg.data(logical_idx);
-                        SLAMS(j).B_bg_mean = mean(B_bg);
+                        B0 = obj.ts.b0.data(logical_idx);
+                        SLAMS(j).B0_mean = mean(B0);
                         SLAMS(j).B_mean = mean(B_abs);
                         SLAMS(j).B_max = max(B_abs);
-                        B_rel = B_abs./B_bg;
+                        B_rel = B_abs./B0;
                         SLAMS(j).B_rel_mean = mean(B_rel);
                         SLAMS(j).B_rel_max = max(B_rel);
                     end

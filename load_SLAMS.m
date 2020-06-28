@@ -101,7 +101,7 @@ function SLAMS_database = load_SLAMS(database_name)
         function search_everything = read_other(fileID)
             lines = read_indent(fileID);
             setting_value = split(lines, ' = ')';
-            if strcmp(setting_value{1,1}, 'Search_everything')
+            if strcmp(setting_value{1,1}, 'Search_outside_fpi')
                 search_everything = eval(setting_value{1,2});
             end
         end
@@ -156,7 +156,7 @@ function SLAMS_database = load_SLAMS(database_name)
         end
 
         if setting_get(SLAMS_database.finder_settings, 'Include_B_stats')
-            col_idx = get_col_idx('B_background_mean');
+            col_idx = get_col_idx('B0_mean');
             B_bg_mean = mat2cell(cel{:, col_idx}, cell_converter_tool, 1);
             B_mean = mat2cell(cel{:, col_idx + 1}, cell_converter_tool, 1);
             B_max = mat2cell(cel{:, col_idx + 2}, cell_converter_tool, 1);

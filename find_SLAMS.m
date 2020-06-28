@@ -4,7 +4,7 @@ sc = 'MMS1';
 plot_prediction = false;
 
 % If true also searches intervals where only fgm instrument is active.
-search_everything = true;
+search_outside_fpi = true;
 
 SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database';
 
@@ -28,15 +28,16 @@ settings = {
     'Include_GSE_coords', true, ...
     'Track_search_durations', true, ...
     'Extra_load_time', 4*60, ...
-    'SLAMS_B_bg_method', 'median', ...
-    'SLAMS_B_bg_window', 60, ...
-    'SLAMS_threshold', 2, ...
+    'SLAMS_B0_method', 'median', ...
+    'SLAMS_B0_window', 60, ...
+    'SLAMS_detection_constant', 2, ...
+    'SLAMS_merging_constant', 1.5, ...
     'SLAMS_min_duration', 0
 };
 
-main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_everything);
+main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_outside_fpi);
 
-function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_everything)
+function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_outside_fpi)
     dir_path = [SLAMS_db_path, '\', database_name];
     if ~exist(dir_path, 'dir')
         mkdir(dir_path);
@@ -47,7 +48,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     
     % get tints
     tints_search = UTC2tints(time_intervals);
-    write_info(dir_path, settings, tints_search, finder, search_everything);
+    write_info(dir_path, settings, tints_search, finder, search_outside_fpi);
     [tints_active, tints_fgm] = get_tints_active(tints_search, 'search');
 
     % find SLAMS where fpi and mec data is available
@@ -102,7 +103,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     end
 end
 
-function write_info(dir_path, settings, tints_search, finder, search_everything)
+function write_info(dir_path, settings, tints_search, finder, search_outside_fpi)
     file_info = fopen([dir_path, '\database_info.txt'], 'w');
 
     sc_str = {'Spacecraft:', finder.sc};
@@ -129,7 +130,7 @@ function write_info(dir_path, settings, tints_search, finder, search_everything)
         fprintf(file_info, priors_str);
     end
 
-    other_str = {'Search_everything', mat2str(search_everything)};
+    other_str = {'Search_outside_fpi', mat2str(search_outside_fpi)};
     other_str = join(other_str, ' = ');
     other_str = vertcat({'Other:'}, other_str);
     other_str = [strjoin(other_str, '\n\t'), '\n'];
@@ -164,7 +165,7 @@ function current_id = write_SLAMS(file_SLAMS, SLAMS, settings, current_id, finde
         end
         
         if setting_get(settings, 'Include_B_stats')
-            add1 = mat2cell(vertcat(SLAMS.B_bg_mean), cell_converter_tool, 1);
+            add1 = mat2cell(vertcat(SLAMS.B0_mean), cell_converter_tool, 1);
             add2 = mat2cell(vertcat(SLAMS.B_mean), cell_converter_tool, 1);
             add3 = mat2cell(vertcat(SLAMS.B_max), cell_converter_tool, 1);
             add4 = mat2cell(vertcat(SLAMS.B_rel_mean), cell_converter_tool, 1);
@@ -233,7 +234,7 @@ function header = construct_header(settings, finder)
     end
 
     if setting_get(settings, 'Include_B_stats')
-        header_add = {'B_background_mean', 'B_mean', 'B_max', 'B_relative_mean', 'B_relative_max'};
+        header_add = {'B0_mean', 'B_mean', 'B_max', 'B_relative_mean', 'B_relative_max'};
         header = horzcat(header, header_add);
     end
 
