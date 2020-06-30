@@ -62,7 +62,7 @@ function SLAMS_database = load_SLAMS(database_name)
             while true
                 l = fgetl(fileID);
                 if ~strcmp(l(1), sprintf('\t'))
-                    fseek(fileID, -(length(l) + 1), 'cof');
+                    fseek(fileID, -(length(l) + 2), 'cof');
                     break;
                 else
                     lines = vertcat(lines, strtrim(l)); %#ok<AGROW>
@@ -157,13 +157,13 @@ function SLAMS_database = load_SLAMS(database_name)
 
         if setting_get(SLAMS_database.finder_settings, 'Include_B_stats')
             col_idx = get_col_idx('B0_mean');
-            B_bg_mean = mat2cell(cel{:, col_idx}, cell_converter_tool, 1);
+            B0_mean = mat2cell(cel{:, col_idx}, cell_converter_tool, 1);
             B_mean = mat2cell(cel{:, col_idx + 1}, cell_converter_tool, 1);
             B_max = mat2cell(cel{:, col_idx + 2}, cell_converter_tool, 1);
             B_rel_mean = mat2cell(cel{:, col_idx + 3}, cell_converter_tool, 1);
             B_rel_max = mat2cell(cel{:, col_idx + 4}, cell_converter_tool, 1);
 
-            [SLAMS.B_bg_mean] = B_bg_mean{:};
+            [SLAMS.B0_mean] = B0_mean{:};
             [SLAMS.B_mean] = B_mean{:};
             [SLAMS.B_max] = B_max{:};
             [SLAMS.B_rel_mean] = B_rel_mean{:};

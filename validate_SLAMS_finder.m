@@ -3,7 +3,7 @@
 
 sc = 'MMS1';
 
-plot_comparison = true;
+plot_comparison = false;
 
 show_region_classifier_steps = false;
 
@@ -38,12 +38,12 @@ function main(sc, settings, save_file_name, plot_comparison, show_region_classif
     fileID = fopen(save_file_name, 'w');
     for bgmtd = ["median", "mean", "harmmean"]
         settings = setting_set(settings, 'SLAMS_B0_method', char(bgmtd));
-        for bgtime = [30, 60, 2*60]
+        for bgtime = [60, 2*60, 3*60]
             settings = setting_set(settings, 'SLAMS_B0_window', bgtime);
             settings = setting_set(settings, 'Extra_load_time', bgtime/2);
             for thresh = [2, 2.5]
                 settings = setting_set(settings, 'SLAMS_detection_constant', thresh);
-                for min_dur = [0, 1]
+                for min_dur = [1]
                     settings = setting_set(settings, 'SLAMS_min_duration', min_dur);
                     run_count = run_count + 1;
                     results = validate(finder, labeled_files, settings, 'Plot', plot_comparison);
@@ -143,11 +143,11 @@ function plot_precision_recall(results)
         end
 
         switch result.bgtime
-        case 60*2
+        case 60*3
             marker_size = 10;
-        case 60
+        case 60*2
             marker_size = 8;
-        case 30
+        case 60
             marker_size = 6;
         end
 
@@ -162,7 +162,8 @@ function plot_precision_recall(results)
 
         switch result.min_dur
         case 0
-            color_face = color_face*0.6;
+            % color_face = color_face*0.6;
+            color_face = color_face*1;
         case 1
             color_face = color_face*1;
         end

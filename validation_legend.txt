@@ -11,3 +11,5 @@
 11: Removal of 1, 2, 3 sec SLAMS, Removal of edge SLAMS for main tint, 1, 2, 3 min window, No region classifier
 12: Removal of 0, 1 sec SLAMS, Removal of edge SLAMS for main tint, 1, 2, 3 min window, No region classifier
 13: Removal of 0, 1 sec SLAMS, Removal of edge SLAMS for main tint, 0.5, 1, 2 min window, No region classifier
+14: Removal of 0 sec SLAMS, Removal of edge SLAMS for main tint, 1, 2, 3 min window, No region classifier
+15: Removal of 1 sec SLAMS, Removal of edge SLAMS for main tint, 1, 2, 3 min window, No region classifier

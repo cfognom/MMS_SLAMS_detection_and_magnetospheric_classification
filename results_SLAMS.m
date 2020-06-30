@@ -18,9 +18,14 @@ function results_SLAMS(SLAMS_database)
     gridsize = 1;
 
     SLAMS = SLAMS_database.SLAMS;
+    SLAMS = filter_short(SLAMS, 1);
     search_durations = SLAMS_database.search_durations;
+    
     SLAMS_unclassified = SLAMS_database.SLAMS_unclassified;
+    SLAMS_unclassified = filter_short(SLAMS_unclassified, 1);
     search_durations_unclassified = SLAMS_database.search_durations_unclassified;
+
+    SLAMS_combined = combine_SLAMS(SLAMS, SLAMS_unclassified);
     search_durations_combined = combine_map(search_durations, 5, search_durations_unclassified, 1);
 
     n_classes = SLAMS_database.n_region_classes;
@@ -60,131 +65,64 @@ function results_SLAMS(SLAMS_database)
     plot_reference(true, 'k')
     legend(SLAMS_database.region_classes{ordering})
     title('Detected SLAMS')
+
+
+    
     
     % Plot search durations when fpi is active
-    search_durations = arrayify_map(rescale_map(SLAMS_database.search_durations, gridsize));
-    search_dur_tot = search_durations(:,[1, 2, n_classes + 3]);
-    search_dur_tot_h = [search_durations(:, 1:2), search_dur_tot(:, 3)/3600];
-    grid_plot(search_dur_tot_h, 'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize)
-    title('Search time: fpi active')
+    gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize};
+    plot_search_durations('Search time: fpi active', search_durations, 5, gridplot_settings, false)
     
     % % Plot search durations when fpi is inactive
-    % search_durations_unclassified = arrayify_map(SLAMS_database.search_durations_unclassified);
-    % % search_dur_tot = search_durations_unclassified(:,[1, 2, 3]);
-    % search_dur_tot_h = [search_durations_unclassified(:, 1:2), search_durations_unclassified(:, 3)/3600];
-    % grid_plot(search_dur_tot_h, 'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]')
-    % title('Search time: fpi inactive')
+    % gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize};
+    % plot_search_durations('Search time: fpi inactive', search_durations_unclassified, 1, gridplot_settings, false)
     
     % Plot search durations when fgm is active
-    search_durations_combined = arrayify_map(rescale_map(search_durations_combined, gridsize));
-    search_durations_combined_h = [search_durations_combined(:,1:2), search_durations_combined(:,3)/3600];
-    grid_plot(search_durations_combined_h, 'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize)
-    title('Search time: fgm active')
-    
+    gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize};
+    plot_search_durations('Search time: fgm active', search_durations_combined, 1, gridplot_settings, false)
+
     % Plot portion of time spent in each region
-    search_dur_classes = cell(1, n_classes);
-    class_ratio = cell(1, n_classes);
-    label = {
-        'Portion of time in MSP';
-        'Portion of time in SW';
-        'Portion of time in MSH';
-        'Portion of time in FS'
-    };
     for j = 1:n_classes
-        search_dur_classes{j} = search_durations(:, [1, 2, j + 2]);
-
-        class_ratio{j} = [search_durations(:, 1:2), search_dur_classes{j}(:, 3)./search_dur_tot(:, 3)*100];
-
-        grid_plot(class_ratio{j}, 'use_GSE', true, 'colormap', 'hot', 'max_value', 100, 'color_label', 'Percent [%]', 'ref_color', 'c', 'gridsize', gridsize)
-        title(label{j})
+        gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'max_value', 100, 'color_label', 'Percent [%]', 'ref_color', 'c', 'gridsize', gridsize};
+        plot_search_durations(['Portion of time in ', SLAMS_database.region_classes{j}], search_durations, [j, 5], gridplot_settings, true)
     end
+
+
+
 
     % Plot SLAMS rate
-    map_SLAMS_count = mapify_SLAMS(vertcat(SLAMS.pos_GSE), repelem(1, length(SLAMS))', keys(SLAMS_database.search_durations));
-    map_SLAMS_unclassified_count = mapify_SLAMS(vertcat(SLAMS_unclassified.pos_GSE), repelem(1, length(SLAMS_unclassified))', keys(SLAMS_database.search_durations_unclassified));
-    map_SLAMS_combined_count = combine_map(map_SLAMS_count, 1, map_SLAMS_unclassified_count, 1);
-    arr_SLAMS_combined_count = arrayify_map(map_zero_to_nan(rescale_map(map_SLAMS_combined_count, gridsize)));
-    SLAMS_per_h = [search_durations_combined(:, 1:2), arr_SLAMS_combined_count(:, 3)./search_durations_combined_h(:, 3)];
-    grid_plot(SLAMS_per_h, 'use_GSE', false, 'colormap', 'hot', 'color_label', 'Count per hour [n/h]', 'ref_color', 'r', 'gridsize', gridsize)
-    title('SLAMS rate')
+    gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', 50, 'color_label', 'Count per hour [n/h]', 'ref_color', 'r', 'gridsize', gridsize};
+    plot_SLAMS_rate('SLAMS rate', SLAMS_combined, search_durations_combined, 1, gridplot_settings)
     
     % Plot SLAMS rel strength
-    map_SLAMS_strength = mapify_SLAMS(vertcat(SLAMS.pos_GSE), vertcat(SLAMS.B_rel_max), keys(SLAMS_database.search_durations));
-    map_SLAMS_unclassified_strength = mapify_SLAMS(vertcat(SLAMS_unclassified.pos_GSE), vertcat(SLAMS_unclassified.B_rel_max), keys(SLAMS_database.search_durations_unclassified));
-    map_SLAMS_combined_strength = combine_map(map_SLAMS_strength, 1, map_SLAMS_unclassified_strength, 1);
-    arr_SLAMS_combined_strength = arrayify_map(rescale_map(map_SLAMS_combined_strength, gridsize));
-    SLAMS_mean_B_max = [search_durations_combined(:, 1:2), arr_SLAMS_combined_strength(:, 3)./arr_SLAMS_combined_count(:, 3)];
-    grid_plot(SLAMS_mean_B_max, 'use_GSE', false, 'colormap', 'jet', 'min_value', 2, 'max_value', 3, 'color_label', 'Mean B_{max}/B_0 [-]', 'ref_color', 'r', 'gridsize', gridsize)
-    title('SLAMS relative strength')
+    gridplot_settings = {'use_GSE', false, 'colormap', 'jet', 'min_value', 2, 'max_value', 3.5, 'color_label', 'Mean B_{max}/B_0 [-]', 'ref_color', 'r', 'gridsize', gridsize};
+    plot_SLAMS_strength('SLAMS relative strength', SLAMS_combined, gridplot_settings, true)
 
     % Plot SLAMS strength
-    map_SLAMS_strength = mapify_SLAMS(vertcat(SLAMS.pos_GSE), vertcat(SLAMS.B_max), keys(SLAMS_database.search_durations));
-    map_SLAMS_unclassified_strength = mapify_SLAMS(vertcat(SLAMS_unclassified.pos_GSE), vertcat(SLAMS_unclassified.B_max), keys(SLAMS_database.search_durations_unclassified));
-    map_SLAMS_combined_strength = combine_map(map_SLAMS_strength, 1, map_SLAMS_unclassified_strength, 1);
-    arr_SLAMS_combined_strength = arrayify_map(rescale_map(map_SLAMS_combined_strength, gridsize));
-    SLAMS_mean_B_max = [search_durations_combined(:, 1:2), arr_SLAMS_combined_strength(:, 3)./arr_SLAMS_combined_count(:, 3)];
-    grid_plot(SLAMS_mean_B_max, 'use_GSE', false, 'colormap', 'jet', 'min_value', 0, 'max_value', 50, 'color_label', 'Mean B_{max} [nT]', 'ref_color', 'r', 'gridsize', gridsize)
-    title('SLAMS strength')
-    
-    label_count = {
-        'MSP SLAMS rate';
-        'SW SLAMS rate';
-        'MSH SLAMS rate';
-        'FS SLAMS rate'
-    };
+    gridplot_settings = {'use_GSE', false, 'colormap', 'jet', 'min_value', 0, 'max_value', 50, 'color_label', 'Mean B_{max} [nT]', 'ref_color', 'r', 'gridsize', gridsize};
+    plot_SLAMS_strength('SLAMS strength', SLAMS_combined, gridplot_settings, false)
 
-    label_rel_strength = {
-        'MSP SLAMS relative strength';
-        'SW SLAMS relative strength';
-        'MSH SLAMS relative strength';
-        'FS SLAMS relative strength'
-    };
-        
-    label_strength = {
-        'MSP SLAMS strength';
-        'SW SLAMS strength';
-        'MSH SLAMS strength';
-        'FS SLAMS strength'
-    };
+    rate_specific = [nan, nan, 100, 50];
+    rate_global = [nan, nan, 50, 10];
+
     for j = [3,4]
         % Plot SLAMS classes rate
-        map_SLAMS_count = mapify_SLAMS(vertcat(SLAMS_classes{j}.pos_GSE), repelem(1, length(SLAMS_classes{j}))', keys(SLAMS_database.search_durations));
-        arr_SLAMS_count = arrayify_map(map_zero_to_nan(rescale_map(map_SLAMS_count, gridsize)));
-        SLAMS_per_h = [search_durations(:, 1:2), arr_SLAMS_count(:, 3)./search_dur_tot_h(:, 3)];
-        grid_plot(SLAMS_per_h, 'use_GSE', false, 'colormap', 'hot', 'color_label', 'Count per hour [n/h]', 'ref_color', 'r', 'gridsize', gridsize)
-        title(label_count{j});
+        gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_global(j), 'color_label', 'Count per hour [n/h]', 'ref_color', 'r', 'gridsize', gridsize};
+        plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate'], SLAMS_classes{j}, search_durations, 5, gridplot_settings)
+
+        gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_specific(j), 'color_label', ['Count per ', SLAMS_database.region_classes{j}, ' hour [n/h]'], 'ref_color', 'r', 'gridsize', gridsize};
+        plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate in ' SLAMS_database.region_classes{j}], SLAMS_classes{j}, search_durations, j, gridplot_settings)
         
         % Plot SLAMS classes rel strength
-        map_SLAMS_strength = mapify_SLAMS(vertcat(SLAMS_classes{j}.pos_GSE), vertcat(SLAMS_classes{j}.B_rel_max), keys(SLAMS_database.search_durations));
-        arr_SLAMS_strength = arrayify_map(rescale_map(map_SLAMS_strength, gridsize));
-        SLAMS_mean_B_max = [search_durations(:, 1:2), arr_SLAMS_strength(:, 3)./arr_SLAMS_count(:, 3)];
-        grid_plot(SLAMS_mean_B_max, 'use_GSE', false, 'colormap', 'jet', 'min_value', 2, 'max_value', 3, 'color_label', 'Mean B_{max}/B_0 [-]', 'ref_color', 'r', 'gridsize', gridsize)
-        title(label_rel_strength{j});
+        gridplot_settings = {'use_GSE', false, 'colormap', 'jet', 'min_value', 2, 'max_value', 3.5, 'color_label', 'Mean B_{max}/B_0 [-]', 'ref_color', 'r', 'gridsize', gridsize};
+        plot_SLAMS_strength([SLAMS_database.region_classes{j}, ' SLAMS relative strength'], SLAMS_classes{j}, gridplot_settings, true)
 
         % Plot SLAMS classes strength
-        map_SLAMS_strength = mapify_SLAMS(vertcat(SLAMS_classes{j}.pos_GSE), vertcat(SLAMS_classes{j}.B_max), keys(SLAMS_database.search_durations));
-        arr_SLAMS_strength = arrayify_map(rescale_map(map_SLAMS_strength, gridsize));
-        SLAMS_mean_B_max = [search_durations(:, 1:2), arr_SLAMS_strength(:, 3)./arr_SLAMS_count(:, 3)];
-        grid_plot(SLAMS_mean_B_max, 'use_GSE', false, 'colormap', 'jet', 'min_value', 0, 'max_value', 50, 'color_label', 'Mean B_{max} [-]', 'ref_color', 'r', 'gridsize', gridsize)
-        title(label_strength{j});
+        gridplot_settings = {'use_GSE', false, 'colormap', 'jet', 'min_value', 0, 'max_value', 50, 'color_label', 'Mean B_{max} [-]', 'ref_color', 'r', 'gridsize', gridsize};
+        plot_SLAMS_strength([SLAMS_database.region_classes{j}, ' SLAMS strength'], SLAMS_classes{j}, gridplot_settings, false)
     end
     
-    % histogram_angles(SLAMS, SLAMS_classes);
-    
     plot_strength(SLAMS_classes);
-    % SLAMS_filter = setting_set(SLAMS_filter, 'B_filter', @(B0_mean, B_mean, B_max, B_rel_mean, B_rel_max) B_rel_max > 4);
-    % SLAMS_strong = filter_SLAMS(SLAMS, SLAMS_filter{:});
-    % figure;
-    % plot_pos(SLAMS_strong, 'k.')
-    
-    % figure;
-    % hold on
-    % plot([SLAMS_MSH.B_mean], [SLAMS_MSH.B_max], 'b.')
-    % plot([SLAMS_FS.B_mean], [SLAMS_FS.B_max], 'c.')
-
-    % function cm = create_colormap(minColor, maxColor)
-    %     cm = interp1([0; 1], [minColor; maxColor], linspace(0,1,256));
-    % end
     
     function plot_pos_classes(SLAMS_classes)
         for i = ordering
@@ -226,25 +164,25 @@ function results_SLAMS(SLAMS_database)
         scatter(pos(:, 1), pos_yz, 36, c, '.')
     end
     
-    function histogram_angles(SLAMS, SLAMS_classes)
-        edges = linspace(0, 180, 19);
+    % function histogram_angles(SLAMS, SLAMS_classes)
+    %     edges = linspace(0, 180, 19);
 
-        figure;
-        hold on
-        histogram(calc_angle(SLAMS), edges, 'FaceColor', [0.5 0.5 0.5]);
-        for i = ordering
-            histogram(calc_angle(SLAMS_classes{i}), edges, 'FaceColor', color_scheme{i});
-        end
-        ylabel('Count SLAMS')
-        xlabel('Angle from [1 0 0] GSE')
-        grid on
-        legend('ALL', SLAMS_database.region_classes{ordering})
+    %     figure;
+    %     hold on
+    %     histogram(calc_angle(SLAMS), edges, 'FaceColor', [0.5 0.5 0.5]);
+    %     for i = ordering
+    %         histogram(calc_angle(SLAMS_classes{i}), edges, 'FaceColor', color_scheme{i});
+    %     end
+    %     ylabel('Count SLAMS')
+    %     xlabel('Angle from [1 0 0] GSE')
+    %     grid on
+    %     legend('ALL', SLAMS_database.region_classes{ordering})
         
-        function ang = calc_angle(SLAMS)
-            pos_GSE = vertcat(SLAMS.pos_GSE);
-            ang = acosd(pos_GSE(:,1)./(sqrt(sum(pos_GSE.^2, 2))));
-        end
-    end
+    %     function ang = calc_angle(SLAMS)
+    %         pos_GSE = vertcat(SLAMS.pos_GSE);
+    %         ang = acosd(pos_GSE(:,1)./(sqrt(sum(pos_GSE.^2, 2))));
+    %     end
+    % end
     
     function plot_strength(SLAMS_classes, plot_3d)
         if nargin == 1
@@ -257,7 +195,7 @@ function results_SLAMS(SLAMS_database)
             yz = irf_abs(pos(:,2:3), 1);
             xBS = bowshock_pos(yz);
             x = pos(:,1) - xBS;
-            s = vertcat(SLAMS_classes{i}.B_rel_max);
+            s = vertcat(SLAMS_classes{i}.B_max);
             if plot_3d
                 scatter3(x, yz, s, 36, color_scheme{i}, '.')
             else
@@ -451,5 +389,68 @@ function results_SLAMS(SLAMS_database)
                 map(i{:}) = nan;
             end
         end
+    end
+
+    function SLAMS_combined = combine_SLAMS(SLAMS, SLAMS_unclassified)
+        SLAMS = rmfield(SLAMS, 'region_posterior');
+        SLAMS = rmfield(SLAMS, 'region_mahaldist');
+        SLAMS = rmfield(SLAMS, 'region_logpdf');
+        SLAMS_combined = vertcat(SLAMS, SLAMS_unclassified);
+    end
+
+    function plot_search_durations(name, search_dur_map, k, gridplot_settings, relative)
+        search_dur = arrayify_map(rescale_map(search_dur_map, setting_get(gridplot_settings, 'gridsize')));
+        search_dur = search_dur(:, [1, 2, 2 + k]);
+        if relative
+            search_dur = [search_dur(:, 1:2), search_dur(:, 3)./search_dur(:, 4)*100];
+        else
+            search_dur = [search_dur(:, 1:2), search_dur(:, 3)/3600];
+        end
+        grid_plot(search_dur, gridplot_settings{:})
+        title(name)
+    end
+
+    function plot_SLAMS_rate(name, SLAMS, search_dur, k, gridplot_settings)
+        map_SLAMS_count = mapify_SLAMS(vertcat(SLAMS.pos_GSE), repelem(1, length(SLAMS))', keys(search_dur));
+        gridsize = setting_get(gridplot_settings, 'gridsize');
+        arr_SLAMS_count = arrayify_map(map_zero_to_nan(rescale_map(map_SLAMS_count, gridsize)));
+        arr_search_dur = arrayify_map(rescale_map(search_dur, gridsize));
+        assert(all(arr_SLAMS_count(:,1) == arr_search_dur(:,1)));
+        SLAMS_per_h = [arr_search_dur(:, 1:2), 3600*arr_SLAMS_count(:, 3)./arr_search_dur(:, 2 + k)];
+        grid_plot(SLAMS_per_h, gridplot_settings{:})
+        title(name)
+    end
+
+    function plot_SLAMS_strength(name, SLAMS, gridplot_settings, relative)
+        pos = vertcat(SLAMS.pos_GSE);
+        gridsize = setting_get(gridplot_settings, 'gridsize');
+        map_SLAMS_count = mapify_SLAMS(pos, repelem(1, length(SLAMS))');
+        arr_SLAMS_count = arrayify_map(rescale_map(map_SLAMS_count, gridsize));
+        if relative
+            map_SLAMS_strength = mapify_SLAMS(pos, vertcat(SLAMS.B_rel_max));
+        else
+            map_SLAMS_strength = mapify_SLAMS(pos, vertcat(SLAMS.B_max));
+        end
+        arr_SLAMS_strength = arrayify_map(rescale_map(map_SLAMS_strength, gridsize));
+        arr_SLAMS_mean_strength = [arr_SLAMS_strength(:, 1:2), arr_SLAMS_strength(:, 3)./arr_SLAMS_count(:, 3)];
+        grid_plot(arr_SLAMS_mean_strength, gridplot_settings{:});
+        title(name);
+    end
+
+    % function plot_SLAMS_monolithness(name, SLAMS, gridplot_settings)
+    %     pos = vertcat(SLAMS.pos_GSE);
+    %     gridsize = setting_get(gridplot_settings, 'gridsize');
+    %     map_SLAMS_monolithness = mapify_SLAMS(pos, vertcat(SLAMS.stop) - vertcat(SLAMS.start));
+    %     arr_SLAMS_monolithness = arrayify_map(rescale_map(map_SLAMS_monolithness, gridsize));
+    %     map_SLAMS_count = mapify_SLAMS(pos, repelem(1, length(SLAMS))');
+    %     arr_SLAMS_count = arrayify_map(rescale_map(map_SLAMS_count, gridsize));
+    %     arr_SLAMS_mean_monolithness = [arr_SLAMS_monolithness(:, 1:2), arr_SLAMS_monolithness(:, 3)./arr_SLAMS_count(:, 3)];
+    %     grid_plot(arr_SLAMS_mean_monolithness, gridplot_settings{:});
+    %     title(name);
+    % end
+
+    function SLAMS = filter_short(SLAMS, lim)
+        dur = [SLAMS.stop] - [SLAMS.start];
+        SLAMS = SLAMS(dur > lim);
     end
 end
