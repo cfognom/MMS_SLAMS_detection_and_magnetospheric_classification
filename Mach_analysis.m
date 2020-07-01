@@ -1,4 +1,4 @@
-function example_analysis(SLAMS_database)
+function mach_analysis(SLAMS_database)
     
     sc = 'mms1';
 
