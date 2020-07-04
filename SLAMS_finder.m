@@ -197,9 +197,12 @@ classdef SLAMS_finder < handle
                     end
                 end
                 title(name)
-                xlabel('MAD log energy flux');
-                ylabel('Mean log energy flux');
-                zlabel('log bulk_v cone angle');
+                % MAD log particle energy
+                xlabel('F_3');
+                % Mean log particle energy
+                ylabel('F_2');
+                % Log normalized cone angle
+                zlabel('F_1');
             end
         end
 
