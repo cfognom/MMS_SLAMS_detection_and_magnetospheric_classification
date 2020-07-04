@@ -1,5 +1,5 @@
 
-function results_SLAMS(SLAMS_database)
+function SLAMS_results(SLAMS_database)
 
     % SLAMS_filter = {
     %     'ID', [], ...
@@ -18,11 +18,13 @@ function results_SLAMS(SLAMS_database)
     gridsize = 1;
 
     SLAMS = SLAMS_database.SLAMS;
-    SLAMS = filter_short(SLAMS, 1);
+    % SLAMS = filter_short(SLAMS, 1);
+    % SLAMS = filter_weak(SLAMS, 2.5);
     search_durations = SLAMS_database.search_durations;
     
     SLAMS_unclassified = SLAMS_database.SLAMS_unclassified;
-    SLAMS_unclassified = filter_short(SLAMS_unclassified, 1);
+    % SLAMS_unclassified = filter_short(SLAMS_unclassified, 1);
+    % SLAMS_unclassified = filter_weak(SLAMS_unclassified, 2.5);
     search_durations_unclassified = SLAMS_database.search_durations_unclassified;
 
     SLAMS_combined = combine_SLAMS(SLAMS, SLAMS_unclassified);
@@ -65,9 +67,6 @@ function results_SLAMS(SLAMS_database)
     plot_reference(true, 'k')
     legend(SLAMS_database.region_classes{ordering})
     title('Detected SLAMS')
-
-
-    
     
     % Plot search durations when fpi is active
     gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize};
@@ -453,4 +452,9 @@ function results_SLAMS(SLAMS_database)
         dur = [SLAMS.stop] - [SLAMS.start];
         SLAMS = SLAMS(dur > lim);
     end
+
+    function SLAMS = filter_weak(SLAMS, lim)
+        strength = [SLAMS.B_max];
+        SLAMS = SLAMS(strength > lim);
+    end    
 end
