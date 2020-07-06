@@ -3,7 +3,7 @@ sc = 'MMS1';
 % If true plots the time series, only use this for debugging.
 plot_prediction = false;
 
-% If true also searches intervals where only fgm instrument is active.
+% If true also searches intervals where only fgm instrument is active (secondary intervals).
 search_outside_fpi = true;
 
 SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database';
@@ -53,7 +53,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
 
     % find SLAMS where fpi and mec data is available
     tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
-    search_tints(tints_valid, '\SLAMS.csv', '\search_durations.txt')
+    search_tints(tints_valid, '\SLAMS_primary.csv', '\search_durations_primary.txt')
     
     if search_outside_fpi
         % find SLAMS where only fgm data is available
@@ -63,7 +63,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
         settings = setting_set(settings, 'Extra_load_time', -setting_get(settings, 'Extra_load_time'));
         settings = setting_set(settings, 'Include_region_stats', false);
 
-        search_tints(tints_valid, '\SLAMS_unclassified.csv', '\search_durations_unclassified.txt');
+        search_tints(tints_valid, '\SLAMS_secondary.csv', '\search_durations_secondary.txt');
     end
 
     disp('Done!')
