@@ -22,14 +22,13 @@ classdef SLAMS_finder < handle
 
             p = inputParser;
             addParameter(p, 'Show_region_classifier_steps', false)
-            addParameter(p, 'Show_region_classifier_SLAMS', false)
             addParameter(p, 'Spacecraft', 'MMS1')
             parse(p, varargin{:})
             r = p.Results;
 
             obj.ts = struct;
             obj.last_run_results = struct;
-            obj.construct_region_classifier(r.Show_region_classifier_steps, r.Show_region_classifier_SLAMS);
+            obj.construct_region_classifier(r.Show_region_classifier_steps);
             obj.sc = lower(r.Spacecraft);
             obj.search_durations = containers.Map;
         end
@@ -45,7 +44,7 @@ classdef SLAMS_finder < handle
             data = [E_MAD, E_mean, ang];
         end
 
-        function construct_region_classifier(obj, plot_progress, include_SLAMS)
+        function construct_region_classifier(obj, plot_progress)
             disp('Constructing region classifier...')
             % X4 = readmatrix(['cache/', 'traindata4.txt']);
             % X5 = readmatrix(['cache/', 'traindata5.txt']);
@@ -58,15 +57,6 @@ classdef SLAMS_finder < handle
             E_ion_bin_center = X(:,69:100);
             X = obj.create_region_data(E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion);
 
-            if include_SLAMS
-                X_SLAMS = readmatrix(['cache/', 'SLAMSSampData.txt']);
-
-                v_ion = X_SLAMS(:,2:4);
-                E_ion_omni = X_SLAMS(:,5:36);
-                E_ion_bin_delta = X_SLAMS(:,37:68);
-                E_ion_bin_center = X_SLAMS(:,69:100);
-                X_SLAMS = obj.create_region_data(E_ion_bin_center, E_ion_bin_delta, E_ion_omni, v_ion);
-            end
             [n, ~] = size(X);
 
             if plot_progress
@@ -123,11 +113,7 @@ classdef SLAMS_finder < handle
             y = cluster(model, X);
 
             if plot_progress
-                if include_SLAMS
-                    plot_points(X, 'GMM clusters', y, X_SLAMS)
-                else
-                    plot_points(X, 'GMM clusters', y)
-                end
+                plot_points(X, 'GMM clusters', y)
             end
 
             obj.region_classifier = @classifierFunction;

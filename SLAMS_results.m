@@ -90,7 +90,7 @@ function SLAMS_results(SLAMS_database)
 
 
     % Plot SLAMS rate
-    gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', 50, 'color_label', 'Count per hour [n/h]', 'ref_color', 'r', 'gridsize', gridsize};
+    gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', 50, 'color_label', 'Count per hour [n/h]', 'ref_color', 'c', 'gridsize', gridsize};
     plot_SLAMS_rate('SLAMS rate', SLAMS_combined, search_durations_combined, 1, gridplot_settings)
     
     % Plot SLAMS rel strength
@@ -106,10 +106,10 @@ function SLAMS_results(SLAMS_database)
 
     for j = [3,4]
         % Plot SLAMS classes rate
-        gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_global(j), 'color_label', 'Count per hour [n/h]', 'ref_color', 'r', 'gridsize', gridsize};
+        gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_global(j), 'color_label', 'Count per hour [n/h]', 'ref_color', 'c', 'gridsize', gridsize};
         plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate'], SLAMS_classes{j}, search_durations, 5, gridplot_settings)
 
-        gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_specific(j), 'color_label', ['Count per ', SLAMS_database.region_classes{j}, ' hour [n/h]'], 'ref_color', 'r', 'gridsize', gridsize};
+        gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_specific(j), 'color_label', ['Count per ', SLAMS_database.region_classes{j}, ' hour [n/h]'], 'ref_color', 'c', 'gridsize', gridsize};
         plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate in ' SLAMS_database.region_classes{j}], SLAMS_classes{j}, search_durations, j, gridplot_settings)
         
         % Plot SLAMS classes rel strength
@@ -121,7 +121,7 @@ function SLAMS_results(SLAMS_database)
         plot_SLAMS_strength([SLAMS_database.region_classes{j}, ' SLAMS strength'], SLAMS_classes{j}, gridplot_settings, false)
     end
     
-    plot_strength(SLAMS_classes);
+    % plot_strength(SLAMS_classes);
     
     function plot_pos_classes(SLAMS_classes)
         for i = ordering
@@ -141,14 +141,14 @@ function SLAMS_results(SLAMS_database)
             plot(x.*r, y.*r, 'color', c, 'LineWidth', 1.5)
             xlim([-22, 30])
             ylim([0, 35])
-            xlabel('x R_{GSE}')
+            xlabel('x R_E')
         else
             plot([0, 0], [0,35], 'color', c, 'LineWidth', 1.5)
             xlim([-30, 18])
             ylim([0, 35])
-            xlabel('x - x_{BS} R_{GSE}')
+            xlabel('x - x_{BS} R_E')
         end
-        ylabel('\rho R_{GSE}')
+        ylabel('\rho R_E')
         % plot(x.*r + 11.5, y.*r, 'k')
         % plot(x.*r + 15, y.*r, 'k')
 

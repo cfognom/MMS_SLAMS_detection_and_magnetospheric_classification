@@ -55,7 +55,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
     search_tints(tints_valid, '\SLAMS.csv', '\search_durations.txt')
     
-    if search_everything
+    if search_outside_fpi
         % find SLAMS where only fgm data is available
         tints_only_fgm = subtract_tints(tints_fgm, tints_active);
         tints_valid = remove_short_tints(tints_only_fgm, 2*setting_get(settings, 'Extra_load_time'));
