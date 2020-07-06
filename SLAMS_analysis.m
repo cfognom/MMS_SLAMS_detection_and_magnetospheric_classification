@@ -12,7 +12,7 @@ function SLAMS_analysis(SLAMS_database)
 
     n = 1000;
 
-    SLAMS = SLAMS_database.SLAMS;
+    SLAMS = SLAMS_database.SLAMS_primary;
 
     window_idx = 3;
 
@@ -142,7 +142,7 @@ function SLAMS_analysis(SLAMS_database)
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'b')
     counts = histogram_mean(Ma_SLAMS_FS, [SLAMS_FS.B_rel_max], edges);
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'c')
-    xlabel('Mach number of surrounding flow [-]')
+    xlabel('Mach number of surrounding flow, M_A [-]')
     ylabel('Mean B_{max}/B_0 [-]')
     title('SLAMS relative strength vs mach number')
     legend('MSH SLAMS', 'FS SLAMS', 'Location', 'NorthWest')
@@ -154,7 +154,7 @@ function SLAMS_analysis(SLAMS_database)
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'b')
     counts = histogram_mean(Ma_SLAMS_FS, [SLAMS_FS.B_max], edges);
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'c')
-    xlabel('Mach number of surrounding flow [-]')
+    xlabel('Mach number of surrounding flow, M_A [-]')
     ylabel('Mean B_{max} [nT]')
     title('SLAMS strength vs mach number')
     legend('MSH SLAMS', 'FS SLAMS')
@@ -166,7 +166,7 @@ function SLAMS_analysis(SLAMS_database)
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'b')
     counts = histogram_mean(Ma_SLAMS_FS, size_SLAMS_FS_nans, edges);
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'c')
-    xlabel('Mach number of surrounding flow [-]')
+    xlabel('Mach number of surrounding flow, M_A [-]')
     ylabel('Mean size [km]')
     title('SLAMS size vs mach number')
     legend('MSH SLAMS', 'FS SLAMS')
@@ -178,7 +178,7 @@ function SLAMS_analysis(SLAMS_database)
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'b')
     counts = histogram_mean(Ma_SLAMS_FS, delta_t_FS, edges);
     histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'c')
-    xlabel('Mach number of surrounding flow [-]')
+    xlabel('Mach number of surrounding flow, M_A [-]')
     ylabel('Mean duration [s]')
     title('SLAMS duration vs mach number')
     legend('MSH SLAMS', 'FS SLAMS')

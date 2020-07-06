@@ -1,34 +1,20 @@
 
 function SLAMS_results(SLAMS_database)
 
-    % SLAMS_filter = {
-    %     'ID', [], ...
-    %     'After_date', [], ...
-    %     'Before_date', [], ...
-    %     'Min_duration', [], ...
-    %     'Max_duration', [], ...
-    %     'GSE_filter', [], ...
-    %     'B_filter', [], ...
-    %     'Region_filter', []
-    % };
-
-    % % SLAMS_filter = setting_set(SLAMS_filter, 'B_filter', @(~,~,~,~,B_rel_max) B_rel_max > 3);
-    % SLAMS = filter_SLAMS(SLAMS_database.SLAMS, SLAMS_filter{:});
-
     gridsize = 1;
 
-    SLAMS = SLAMS_database.SLAMS;
-    % SLAMS = filter_short(SLAMS, 1);
-    % SLAMS = filter_weak(SLAMS, 2.5);
-    search_durations = SLAMS_database.search_durations;
+    SLAMS_primary = SLAMS_database.SLAMS_primary;
+    % SLAMS_primary = filter_short(SLAMS_primary, 1);
+    % SLAMS_primary = filter_weak(SLAMS_primary, 2.5);
+    search_durations_primary = SLAMS_database.search_durations_primary;
     
-    SLAMS_unclassified = SLAMS_database.SLAMS_unclassified;
-    % SLAMS_unclassified = filter_short(SLAMS_unclassified, 1);
-    % SLAMS_unclassified = filter_weak(SLAMS_unclassified, 2.5);
-    search_durations_unclassified = SLAMS_database.search_durations_unclassified;
+    SLAMS_secondary = SLAMS_database.SLAMS_secondary;
+    % SLAMS_secondary = filter_short(SLAMS_secondary, 1);
+    % SLAMS_secondary = filter_weak(SLAMS_secondary, 2.5);
+    search_durations_secondary = SLAMS_database.search_durations_secondary;
 
-    SLAMS_combined = combine_SLAMS(SLAMS, SLAMS_unclassified);
-    search_durations_combined = combine_map(search_durations, 5, search_durations_unclassified, 1);
+    SLAMS_combined = combine_SLAMS(SLAMS_primary, SLAMS_secondary);
+    search_durations_combined = combine_map(search_durations_primary, 5, search_durations_secondary, 1);
 
     n_classes = SLAMS_database.n_region_classes;
     color_scheme = {[1 0 0], [0 0.7 0], [0 0 1], [0 1 1]};
@@ -37,23 +23,23 @@ function SLAMS_results(SLAMS_database)
     % windows: [instant, 15, 30, 60, 120, 240, 480]
     window_idx = 3;
     posterior_threshold = 0.5;
-    SLAMS_classes = split_SLAMS(SLAMS, posterior_threshold, window_idx);
+    SLAMS_classes = split_SLAMS(SLAMS_primary, posterior_threshold, window_idx);
 
-    disp(['n_SLAMS = ', num2str(length(SLAMS))])
-    disp(['n_SLAMS_unclassified = ', num2str(length(SLAMS_unclassified))])
-    disp(['n_SLAMS_tot = ', num2str(length(SLAMS) + length(SLAMS_unclassified))])
+    disp(['n_SLAMS_primary = ', num2str(length(SLAMS_primary))])
+    disp(['n_SLAMS_secondary = ', num2str(length(SLAMS_secondary))])
+    disp(['n_SLAMS_tot = ', num2str(length(SLAMS_primary) + length(SLAMS_secondary))])
     disp(['n_SLAMS_MSP = ', num2str(length(SLAMS_classes{1}))])
     disp(['n_SLAMS_SW = ', num2str(length(SLAMS_classes{2}))])
     disp(['n_SLAMS_MSH = ', num2str(length(SLAMS_classes{3}))])
     disp(['n_SLAMS_FS = ', num2str(length(SLAMS_classes{4}))])
 
-    % Plot position of classified and unclassified SLAMS
+    % Plot position of classified and secondary SLAMS
     figure;
     hold on
     grid on
     axis equal
-    plot_pos(SLAMS, [0, 0.4470, 0.7410])
-    plot_pos(SLAMS_unclassified, [0.8500, 0.3250, 0.0980])
+    plot_pos(SLAMS_primary, [0, 0.4470, 0.7410])
+    plot_pos(SLAMS_secondary, [0.8500, 0.3250, 0.0980])
     plot_reference(true, 'k')
     legend('fpi active', 'fpi inactive')
     title('Detected SLAMS')
@@ -70,11 +56,11 @@ function SLAMS_results(SLAMS_database)
     
     % Plot search durations when fpi is active
     gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize};
-    plot_search_durations('Search time: fpi active', search_durations, 5, gridplot_settings, false)
+    plot_search_durations('Search time: fpi active', search_durations_primary, 5, gridplot_settings, false)
     
     % % Plot search durations when fpi is inactive
     % gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize};
-    % plot_search_durations('Search time: fpi inactive', search_durations_unclassified, 1, gridplot_settings, false)
+    % plot_search_durations('Search time: fpi inactive', search_durations_secondary, 1, gridplot_settings, false)
     
     % Plot search durations when fgm is active
     gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'color_label', 'Hours [h]', 'ref_color', 'c', 'gridsize', gridsize};
@@ -83,7 +69,7 @@ function SLAMS_results(SLAMS_database)
     % Plot portion of time spent in each region
     for j = 1:n_classes
         gridplot_settings = {'use_GSE', true, 'colormap', 'hot', 'max_value', 100, 'color_label', 'Percent [%]', 'ref_color', 'c', 'gridsize', gridsize};
-        plot_search_durations(['Portion of time in ', SLAMS_database.region_classes{j}], search_durations, [j, 5], gridplot_settings, true)
+        plot_search_durations(['Portion of time in ', SLAMS_database.region_classes{j}], search_durations_primary, [j, 5], gridplot_settings, true)
     end
 
 
@@ -107,10 +93,10 @@ function SLAMS_results(SLAMS_database)
     for j = [3,4]
         % Plot SLAMS classes rate
         gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_global(j), 'color_label', 'Count per hour [n/h]', 'ref_color', 'c', 'gridsize', gridsize};
-        plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate'], SLAMS_classes{j}, search_durations, 5, gridplot_settings)
+        plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate'], SLAMS_classes{j}, search_durations_primary, 5, gridplot_settings)
 
         gridplot_settings = {'use_GSE', false, 'colormap', 'hot', 'max_value', rate_specific(j), 'color_label', ['Count per ', SLAMS_database.region_classes{j}, ' hour [n/h]'], 'ref_color', 'c', 'gridsize', gridsize};
-        plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate in ' SLAMS_database.region_classes{j}], SLAMS_classes{j}, search_durations, j, gridplot_settings)
+        plot_SLAMS_rate([SLAMS_database.region_classes{j}, ' SLAMS rate in ' SLAMS_database.region_classes{j}], SLAMS_classes{j}, search_durations_primary, j, gridplot_settings)
         
         % Plot SLAMS classes rel strength
         gridplot_settings = {'use_GSE', false, 'colormap', 'jet', 'min_value', 2, 'max_value', 3.5, 'color_label', 'Mean B_{max}/B_0 [-]', 'ref_color', 'r', 'gridsize', gridsize};
@@ -390,11 +376,11 @@ function SLAMS_results(SLAMS_database)
         end
     end
 
-    function SLAMS_combined = combine_SLAMS(SLAMS, SLAMS_unclassified)
+    function SLAMS_combined = combine_SLAMS(SLAMS, SLAMS_secondary)
         SLAMS = rmfield(SLAMS, 'region_posterior');
         SLAMS = rmfield(SLAMS, 'region_mahaldist');
         SLAMS = rmfield(SLAMS, 'region_logpdf');
-        SLAMS_combined = vertcat(SLAMS, SLAMS_unclassified);
+        SLAMS_combined = vertcat(SLAMS, SLAMS_secondary);
     end
 
     function plot_search_durations(name, search_dur_map, k, gridplot_settings, relative)

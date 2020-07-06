@@ -9,21 +9,21 @@ function SLAMS_database = load_SLAMS(database_name)
     SLAMS_database = read_info(dir_path);
 
     % read SLAMS
-    SLAMS_database.SLAMS = read_SLAMS([dir_path, '\SLAMS.csv'], SLAMS_database);
+    SLAMS_database.SLAMS_primary = read_SLAMS([dir_path, '\SLAMS_primary.csv'], SLAMS_database);
 
     if setting_get(SLAMS_database.finder_settings, 'Track_search_durations')
-        SLAMS_database.search_durations = read_search_durations([dir_path, '\search_durations.txt'], SLAMS_database);
+        SLAMS_database.search_durations_primary = read_search_durations([dir_path, '\search_durations_primary.txt'], SLAMS_database);
     end
 
-    if SLAMS_database.search_everything
+    if SLAMS_database.include_secondary_intervals
         % read SLAMS where only fgm is active
         original_setting = setting_get(SLAMS_database.finder_settings, 'Include_region_stats');
         SLAMS_database.finder_settings = setting_set(SLAMS_database.finder_settings, 'Include_region_stats', false);
 
-        SLAMS_database.SLAMS_unclassified = read_SLAMS([dir_path, '\SLAMS_unclassified.csv'], SLAMS_database);
+        SLAMS_database.SLAMS_secondary = read_SLAMS([dir_path, '\SLAMS_secondary.csv'], SLAMS_database);
         
         if setting_get(SLAMS_database.finder_settings, 'Track_search_durations')
-            SLAMS_database.search_durations_unclassified = read_search_durations([dir_path, '\search_durations_unclassified.txt'], SLAMS_database);
+            SLAMS_database.search_durations_secondary = read_search_durations([dir_path, '\search_durations_secondary.txt'], SLAMS_database);
         end
 
         SLAMS_database.finder_settings = setting_set(SLAMS_database.finder_settings, 'Include_region_stats', original_setting);
@@ -52,7 +52,7 @@ function SLAMS_database = load_SLAMS(database_name)
                     SLAMS_database.region_class_priors = priors;
                     SLAMS_database.n_region_classes = length(classes);
                 case 'Other:'
-                    SLAMS_database.search_everything = read_other(file_info);
+                    SLAMS_database.include_secondary_intervals = read_other(file_info);
             end
         end
         fclose(file_info);
@@ -98,11 +98,11 @@ function SLAMS_database = load_SLAMS(database_name)
             priors = cellfun(@str2num, classes_priors(:, 2))';
         end
 
-        function search_everything = read_other(fileID)
+        function include_secondary_intervals = read_other(fileID)
             lines = read_indent(fileID);
             setting_value = split(lines, ' = ')';
-            if strcmp(setting_value{1,1}, 'Search_outside_fpi')
-                search_everything = eval(setting_value{1,2});
+            if strcmp(setting_value{1,1}, 'Include_secondary_intervals')
+                include_secondary_intervals = eval(setting_value{1,2});
             end
         end
     end

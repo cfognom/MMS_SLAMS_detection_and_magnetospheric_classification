@@ -4,7 +4,7 @@ sc = 'MMS1';
 plot_prediction = false;
 
 % If true also searches intervals where only fgm instrument is active (secondary intervals).
-search_outside_fpi = true;
+include_secondary_intervals = true;
 
 SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database';
 
@@ -35,9 +35,9 @@ settings = {
     'SLAMS_min_duration', 0
 };
 
-main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_outside_fpi);
+main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, include_secondary_intervals);
 
-function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, search_outside_fpi)
+function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_prediction, include_secondary_intervals)
     dir_path = [SLAMS_db_path, '\', database_name];
     if ~exist(dir_path, 'dir')
         mkdir(dir_path);
@@ -48,14 +48,14 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     
     % get tints
     tints_search = UTC2tints(time_intervals);
-    write_info(dir_path, settings, tints_search, finder, search_outside_fpi);
+    write_info(dir_path, settings, tints_search, finder, include_secondary_intervals);
     [tints_active, tints_fgm] = get_tints_active(tints_search, 'search');
 
     % find SLAMS where fpi and mec data is available
     tints_valid = remove_short_tints(tints_active, 2*setting_get(settings, 'Extra_load_time'));
     search_tints(tints_valid, '\SLAMS_primary.csv', '\search_durations_primary.txt')
     
-    if search_outside_fpi
+    if include_secondary_intervals
         % find SLAMS where only fgm data is available
         tints_only_fgm = subtract_tints(tints_fgm, tints_active);
         tints_valid = remove_short_tints(tints_only_fgm, 2*setting_get(settings, 'Extra_load_time'));
@@ -103,7 +103,7 @@ function main(sc, time_intervals, settings, SLAMS_db_path, database_name, plot_p
     end
 end
 
-function write_info(dir_path, settings, tints_search, finder, search_outside_fpi)
+function write_info(dir_path, settings, tints_search, finder, include_secondary_intervals)
     file_info = fopen([dir_path, '\database_info.txt'], 'w');
 
     sc_str = {'Spacecraft:', finder.sc};
@@ -130,7 +130,7 @@ function write_info(dir_path, settings, tints_search, finder, search_outside_fpi
         fprintf(file_info, priors_str);
     end
 
-    other_str = {'Search_outside_fpi', mat2str(search_outside_fpi)};
+    other_str = {'Include_secondary_intervals', mat2str(include_secondary_intervals)};
     other_str = join(other_str, ' = ');
     other_str = vertcat({'Other:'}, other_str);
     other_str = [strjoin(other_str, '\n\t'), '\n'];

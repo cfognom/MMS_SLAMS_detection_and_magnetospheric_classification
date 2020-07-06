@@ -24,4 +24,4 @@ Region class priors:
 	MSH = 0.52032
 	FS = 0.080431
 Other:
-	Search_outside_fpi = true
+	Include_secondary_intervals = true
