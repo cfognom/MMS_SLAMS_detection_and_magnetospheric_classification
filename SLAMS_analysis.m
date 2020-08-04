@@ -11,8 +11,16 @@ function SLAMS_analysis(SLAMS_database)
     };
 
     n = 1000;
+    do_filter_weak = false;
+    do_filter_short = false;
 
     SLAMS = SLAMS_database.SLAMS_primary;
+    if do_filter_weak
+        SLAMS = filter_weak(SLAMS, 2.5);
+    end
+    if do_filter_short
+        SLAMS = filter_short(SLAMS, 3);
+    end
 
     window_idx = 3;
 
@@ -52,10 +60,18 @@ function SLAMS_analysis(SLAMS_database)
     % tints_SLAMS_SW = point_to_tint(SLAMS_SW_mids, dt);
     tints_control = point_to_tint(control_points, dt);
 
-    Ma_v = get_cached_matrix('Ma_SLAMS_MSH', @() process_tints(tints_SLAMS_MSH, SLAMS_MSH_tints));
+    if do_filter_weak
+        name_MSH = 'Ma_SLAMS_MSH_weak';
+        name_FS = 'Ma_SLAMS_FS_weak';
+    else
+        name_MSH = 'Ma_SLAMS_MSH';
+        name_FS = 'Ma_SLAMS_FS';
+    end
+
+    Ma_v = get_cached_matrix(name_MSH, @() process_tints(tints_SLAMS_MSH, SLAMS_MSH_tints));
     Ma_SLAMS_MSH = Ma_v(:,1);
     v_MSH = Ma_v(:,2);
-    Ma_v = get_cached_matrix('Ma_SLAMS_FS', @() process_tints(tints_SLAMS_FS, SLAMS_FS_tints));
+    Ma_v = get_cached_matrix(name_FS, @() process_tints(tints_SLAMS_FS, SLAMS_FS_tints));
     Ma_SLAMS_FS = Ma_v(:,1);
     v_FS = Ma_v(:,2);
     % Ma_SLAMS_SW = get_cached_matrix('Ma_SLAMS_SW', @() process_tints(tints_SLAMS_SW));
@@ -71,8 +87,8 @@ function SLAMS_analysis(SLAMS_database)
     histogram(Ma_SLAMS_MSH, edges, 'FaceColor', 'b')
     histogram(Ma_SLAMS_FS, edges, 'FaceColor', 'c')
     % histogram(Ma_SLAMS_SW, edges, 'FaceColor', 'g')
-    ylabel('SLAMS count [n]')
-    xlabel('Mach number of surrounding flow [-]')
+    ylabel('Count [n]')
+    xlabel('Mach number of surrounding flow, M_A [-]')
     title('SLAMS mach number')
     xticks(edges(1:2:end))
     legend('Control', 'MSH SLAMS', 'FS SLAMS')
@@ -84,8 +100,8 @@ function SLAMS_analysis(SLAMS_database)
     size_SLAMS_FS_nans = (delta_t_FS).*v_FS;
     size_SLAMS_FS = size_SLAMS_FS_nans(~isnan(size_SLAMS_FS_nans));
     
-    l_MSH = length(size_SLAMS_MSH);
-    l_FS = length(size_SLAMS_FS);
+    l_MSH = length(size_SLAMS_MSH)
+    l_FS = length(size_SLAMS_FS)
     
     l_min = min(l_MSH, l_FS);
     size_SLAMS_MSH = size_SLAMS_MSH(1:l_min);
@@ -183,6 +199,44 @@ function SLAMS_analysis(SLAMS_database)
     title('SLAMS duration vs mach number')
     legend('MSH SLAMS', 'FS SLAMS')
 
+    edges = 0:1:20;
+
+    figure;
+    hold on
+    grid on
+    counts = histogram_mean(delta_t_MSH, [SLAMS_MSH.B_max], edges);
+    histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'b')
+    counts = histogram_mean(delta_t_FS, [SLAMS_FS.B_max], edges);
+    histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'c')
+    xlabel('Duration [s]')
+    ylabel('Mean strength [nT]')
+    title('SLAMS strength vs duration')
+    legend('MSH SLAMS', 'FS SLAMS', 'Location', 'NorthWest')
+
+    figure;
+    hold on
+    grid on
+    counts = histogram_mean(delta_t_MSH, [SLAMS_MSH.B_rel_max], edges);
+    histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'b')
+    counts = histogram_mean(delta_t_FS, [SLAMS_FS.B_rel_max], edges);
+    histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'c')
+    xlabel('Duration [s]')
+    ylabel('Mean relative strength [-]')
+    title('SLAMS relative strength vs duration')
+    legend('MSH SLAMS', 'FS SLAMS', 'Location', 'NorthWest')
+
+    figure;
+    hold on
+    grid on
+    counts = histogram_mean(delta_t_MSH, size_SLAMS_MSH_nans, edges);
+    histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'b')
+    counts = histogram_mean(delta_t_FS, size_SLAMS_FS_nans, edges);
+    histogram('BinEdges', edges, 'BinCounts', counts, 'FaceColor', 'c')
+    xlabel('Duration [s]')
+    ylabel('Mean size [km]')
+    title('SLAMS size vs duration')
+    legend('MSH SLAMS', 'FS SLAMS', 'Location', 'NorthWest')
+
     function SLAMS = pick_n_SLAMS(SLAMS, n)
         rng(100)
         rdm_idx = randperm(length(SLAMS), n);
@@ -258,5 +312,15 @@ function SLAMS_analysis(SLAMS_database)
             counts(j) = mean(y(bins == j));
         end
         counts(isnan(counts)) = 0;
+    end
+
+    function SLAMS = filter_weak(SLAMS, lim)
+        strength = [SLAMS.B_max];
+        SLAMS = SLAMS(strength > lim);
+    end
+
+    function SLAMS = filter_short(SLAMS, lim)
+        dur = [SLAMS.stop] - [SLAMS.start];
+        SLAMS = SLAMS(dur > lim);
     end
 end
