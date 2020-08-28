@@ -1,3 +1,5 @@
+% Run this to create a new SLAMS_database
+
 sc = 'MMS1';
 
 % If true plots the time series, only use this for debugging.
