@@ -16,7 +16,7 @@ Newer versions of Matlab and the IRFU package will probably work too. **Please n
 
 3. ``events/`` Contains csv-files with ``sitl``- and ``burst_segment``-data about SLAMS and the quasi-parallel bowshock from the MMS science data center. It was used to find suitable intervals for the validation dataset.
 
-4. ``labeled/`` Holds the manually created validation dataset in two folders: ``/data`` and ``/plot``. ``/data`` contains txt-files (one file for each validation interval) with alternating SLAMS start- and stop time data. Each file is named according to this naming convention: ``[id]_[interval start time]_[interval stop time].txt`` (time is specified as nanoseconds since 2000). ``/plot`` contains images of the intervals where SLAMS are marked for reference.
+4. ``labeled/`` Holds the manually created validation dataset in two folders: ``data/`` and ``plot/``. ``data/`` contains txt-files (one file for each validation interval) with alternating SLAMS start- and stop time data. Each file is named according to this naming convention: ``[id]_[interval start time]_[interval stop time].txt`` (time is specified as nanoseconds since 2000). ``plot/`` contains images of the intervals where SLAMS are marked for reference.
 
 5. ``tools/`` This is essentially a toolbox that holds many useful functions.
 
