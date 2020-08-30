@@ -1,6 +1,11 @@
 # MMS SLAMS detection and magnetospheric classification
 
-This repository holds the matlab implementation of the SLAMS detection- and magnetospheric classification algorithm of my master thesis. Consider reading it to get a better understanding of this repsitory.
+This repository holds the matlab implementation of the SLAMS detection- and magnetospheric classification algorithm that was developed as part of my master thesis. Consider reading it to get a better understanding of this repsitory.
+
+## Acronyms
+Short large-amplitude magnetic structure(s) (SLAMS)
+
+Magnetospheric multiscale (MMS)
 
 ## Prerequisites
 * Matlab R2019b
