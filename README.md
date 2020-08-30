@@ -10,7 +10,7 @@ Magnetospheric multiscale (MMS)
 ## Prerequisites
 * Matlab R2019b
 * The IRFU-Matlab package on your Matlab path, available at https://github.com/irfu/irfu-matlab (Cloned on 21 Feb 2020)
-* A local MMS database with
+* A local MMS database with fpi and fgm data.
 
 Newer versions of Matlab and the IRFU package will probably work too. **Please note** that you do not need any of this if you are just interested in the raw SLAMS database. This is only if you want to continue development, create a new SLAMS database with other settings or use the database loader, [load_SLAMS.m](load_SLAMS.m).
 
