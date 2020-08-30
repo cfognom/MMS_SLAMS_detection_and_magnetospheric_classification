@@ -2,13 +2,13 @@
 
 This repository holds the matlab implementation of the SLAMS detection- and magnetospheric classification algorithm of my master thesis. Consider reading it to get a better understanding of this repsitory.
 
-# Prerequisites
+## Prerequisites
 * Matlab R2019b
 * The IRFU-Matlab package on your Matlab path, available at https://github.com/irfu/irfu-matlab (Cloned on 21 Feb 2020)
 
 Newer versions of Matlab and the IRFU package will probably work too. **Please note** that you do not need any of this if you are just interested in the raw SLAMS database.
 
-# File structure
+## File structure
 
 1. ``SLAMS_database/`` Holds the SLAMS database and is the default directory for new databases.
 
@@ -33,6 +33,10 @@ Newer versions of Matlab and the IRFU package will probably work too. **Please n
 11. ``load_SLAMS.m`` A function that takes the name of a SLAMS-databse (the name of the folder where the database is located) and loads it into a struct. **Before running it**, ensure that the ``SLAMS_db_path`` variable is the location of the SLAMS databse on your machine.
 
 12. ``validate_SLAMS_finder.m`` The code used to validate the SLAMS detection algorithm against the validation set (section 3.2 of the thesis).
+
+## SLAMS database structure
+
+...
 
 ## Authors
 
