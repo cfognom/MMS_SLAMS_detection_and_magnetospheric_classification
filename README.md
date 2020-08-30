@@ -33,3 +33,11 @@ Newer versions of Matlab and the IRFU package will probably work too. **Please n
 11. ``load_SLAMS.m`` A function that takes the name of a SLAMS-databse (the name of the folder where the database is located) and loads it into a struct. **Before running it**, ensure that the ``SLAMS_db_path`` variable is the location of the SLAMS databse on your machine.
 
 12. ``validate_SLAMS_finder.m`` The code used to validate the SLAMS detection algorithm against the validation set (section 3.2 of the thesis).
+
+## Authors
+
+* **Carl Foghammar Nömtak** - [cfognom](https://github.com/cfognom)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details
