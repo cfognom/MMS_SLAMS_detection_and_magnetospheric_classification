@@ -28,8 +28,8 @@ Newer versions of Matlab and the IRFU package will probably work too. **Please n
 
 9. ``SLAMS_results.m`` The function used to produce the results in section 4.2 of the thesis. Requires a SLAMS-database struct as input, which can be produced by ``load_SLAMS.m``.
 
-10. ``find_SLAMS.m`` This code can produce new SLAMS-databases by searcing multiple intervals. **Before running it** ensure that the ``SLAMS_db_path`` variable is the location of the SLAMS databse on your machine.
+10. ``find_SLAMS.m`` This code can produce new SLAMS-databases by searcing multiple intervals. **Before running it**, ensure that the ``SLAMS_db_path`` variable is the location of the SLAMS databse on your machine.
 
-11. ``load_SLAMS.m`` A function that takes the name of a SLAMS-databse (the name of the folder where the database is located) and loads it into a struct. **Before running it** ensure that the ``SLAMS_db_path`` variable is the location of the SLAMS databse on your machine.
+11. ``load_SLAMS.m`` A function that takes the name of a SLAMS-databse (the name of the folder where the database is located) and loads it into a struct. **Before running it**, ensure that the ``SLAMS_db_path`` variable is the location of the SLAMS databse on your machine.
 
 12. ``validate_SLAMS_finder.m`` The code used to validate the SLAMS detection algorithm against the validation set (section 3.2 of the thesis).
