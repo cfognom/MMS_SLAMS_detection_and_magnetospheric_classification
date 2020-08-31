@@ -2,7 +2,7 @@ function SLAMS_database = load_SLAMS(database_name)
     %LOAD_SLAMS Reads SLAMS from file and returns SLAMS structs
 
     
-    SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database';
+    SLAMS_db_path = 'SLAMS_database';
 
     dir_path = [SLAMS_db_path, '\', database_name];
 

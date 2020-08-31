@@ -8,7 +8,7 @@ plot_prediction = false;
 % If true also searches intervals where only fgm instrument is active (secondary intervals).
 include_secondary_intervals = true;
 
-SLAMS_db_path = 'C:\Users\carlh\Documents\MATLAB\Exjobb\MMS_SLAMS\SLAMS_database';
+SLAMS_db_path = 'SLAMS_database';
 
 database_name = 'identified_SLAMS';
 
