@@ -42,7 +42,13 @@ Newer versions of Matlab and the IRFU package will probably work too. **Please n
 
 ## SLAMS database structure
 
-...
+A SLAMS databse consists of at most 5 files. We provide only one SLAMS database here: [identified_SLAMS_mms1_median60](SLAMS_database/identified_SLAMS_mms1_median60). It was created using a moving median of 60 seconds as the background field estimator (more information about this choice can be found in the thesis). If you want other settings, you can create a new database with [find_SLAMS.m](find_SLAMS.m).
+
+1. [**database_info.txt**](SLAMS_database/identified_SLAMS_mms1_median60/database_info.txt) Contains the settings for the ``SLAMS_finder``-class and other meta-information.
+
+2. [**search_durations_primary.txt**](SLAMS_database/identified_SLAMS_mms1_median60/search_durations_primary.txt) and [**search_durations_secondary.txt**](SLAMS_database/identified_SLAMS_mms1_median60/search_durations_secondary.txt) Contains data about how many seconds were spent inside each sector and magnetospheric class. The format of this data is shown on page 33 of the thesis.
+
+3. [**SLAMS_primary.csv**](SLAMS_database/identified_SLAMS_mms1_median60/SLAMS_primary.csv) and [**SLAMS_secondary.csv**](SLAMS_database/identified_SLAMS_mms1_median60/SLAMS_secondary.csv) These files contains the identified SLAMS in csv-format. The contents of each column is explained by the file header, but it should also be mentioned that all positional data is in [km] (GSE) and B-field data is in [nT]. As explained in the thesis, *primary* and *secondary*, is when the fpi-instrument is active or inactive respectively. As such, primary SLAMS has additional information about their magnetospheric location.
 
 ## Authors
 
